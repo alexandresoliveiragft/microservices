@@ -1,6 +1,12 @@
 package dev.alexandreoliveira.microservices.accountsapi.integrated.controllers;
 
+import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
+import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
+import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
 import dev.alexandreoliveira.microservices.accountsapi.integrated.IntegratedTest;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -19,6 +25,12 @@ class UserControllerTest extends IntegratedTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Test
     @Order(1)
@@ -63,6 +75,16 @@ class UserControllerTest extends IntegratedTest {
     @Test
     @Order(3)
     void shouldExpectedToReturnACorrectUser() throws Exception {
+        var user = new UserEntity();
+        user.setName("Name");
+        user.setEmail("user@email.com");
+        user.setMobileNumber("31911112222");
+
+        UserEntity savedUser = userRepository.save(user);
+
+        Assertions.assertThat(savedUser).isNotNull();
+        Assertions.assertThat(savedUser.getId()).isPositive().isEqualTo(1L);
+
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .get("/users/1");
 
@@ -70,6 +92,40 @@ class UserControllerTest extends IntegratedTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber());
+    }
+
+    @Test
+    @Order(4)
+    void shouldExpectedToReturnACorrectUserWithAccount() throws Exception {
+        var user = new UserEntity();
+        user.setName("Name");
+        user.setEmail("user@email.com");
+        user.setMobileNumber("31911112222");
+
+        UserEntity savedUser = userRepository.save(user);
+
+        Assertions.assertThat(savedUser).isNotNull();
+        Assertions.assertThat(savedUser.getId()).isPositive().isEqualTo(1L);
+
+        var account = new AccountEntity();
+        account.setAccountType(AccountTypeEnum.PF);
+        account.setUser(savedUser);
+
+        AccountEntity savedAccount = accountRepository.save(account);
+
+        Assertions.assertThat(savedAccount).isNotNull();
+        Assertions.assertThat(savedAccount.getId()).isPositive().isEqualTo(1L);
+        Assertions.assertThat(savedAccount.getAccountNumber()).isNotBlank();
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get("/users/1");
+
+        mockMvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accounts").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accounts[*].accountNumber").isNotEmpty());
     }
 
 }

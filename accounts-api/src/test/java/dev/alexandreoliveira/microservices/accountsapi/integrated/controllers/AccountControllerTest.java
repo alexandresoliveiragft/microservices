@@ -1,7 +1,9 @@
 package dev.alexandreoliveira.microservices.accountsapi.integrated.controllers;
 
+import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
 import dev.alexandreoliveira.microservices.accountsapi.integrated.IntegratedTest;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,9 @@ class AccountControllerTest extends IntegratedTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Test
     @Order(1)
@@ -61,4 +66,34 @@ class AccountControllerTest extends IntegratedTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.contains("User not found")));
     }
 
+    @Test
+    @Order(3)
+    void shouldExpectACorrectData() throws Exception {
+        var user = new UserEntity();
+        user.setName("User");
+        user.setEmail("user@email.com");
+        user.setMobileNumber("31911112222");
+
+        UserEntity savedUserEntity = userRepository.save(user);
+
+        Assertions.assertThat(savedUserEntity).isNotNull();
+        Assertions.assertThat(savedUserEntity.getId()).isPositive().isEqualTo(1L);
+
+        var requestData = """
+                {
+                    "userId": 1,
+                    "accountType": "PF"
+                }
+                """.getBytes(StandardCharsets.UTF_8);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post("/accounts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestData);
+
+        mockMvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accountNumber").isNotEmpty());
+    }
 }
