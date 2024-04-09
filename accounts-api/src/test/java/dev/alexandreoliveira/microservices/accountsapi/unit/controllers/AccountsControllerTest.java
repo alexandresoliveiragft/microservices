@@ -1,12 +1,14 @@
 package dev.alexandreoliveira.microservices.accountsapi.unit.controllers;
 
-import dev.alexandreoliveira.microservices.accountsapi.controllers.AccountController;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.AccountsController;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts.AccountControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -28,9 +30,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-@WebMvcTest(AccountController.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AccountControllerTest {
+@WebMvcTest(AccountsController.class)
+class AccountsControllerTest extends UnitTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -63,9 +64,9 @@ class AccountControllerTest {
 
         mockMvc
                 .perform(request)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(Matchers.not(Matchers.emptyArray()))));
+                .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
     }
 
     static Stream<String> shouldExpectedErrorWhenDataIsWrongSource() {
@@ -91,15 +92,18 @@ class AccountControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestData);
 
-        var fakeAccount = new AccountDTO();
-        fakeAccount.setAccountType("PF");
-        fakeAccount.setUserId(0L);
+        var fakeAccount = new AccountControllerCreateRequest(
+                0L,
+                AccountTypeEnum.PF.name()
+        );
 
         Mockito.doThrow(new ServiceException("User not found")).when(mockAccountService).createAccount(fakeAccount);
 
         mockMvc
                 .perform(request)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
     }
 
     @Test
@@ -111,9 +115,10 @@ class AccountControllerTest {
         fakeAccount.setUserId(1L);
         fakeAccount.setAccountNumber("0001000203");
 
-        var expectedData = new AccountDTO();
-        expectedData.setUserId(1L);
-        expectedData.setAccountType(AccountTypeEnum.PF.name());
+        var expectedData = new AccountControllerCreateRequest(
+                1L,
+                AccountTypeEnum.PF.name()
+        );
 
         Mockito.doReturn(fakeAccount).when(mockAccountService).createAccount(expectedData);
 
@@ -133,7 +138,7 @@ class AccountControllerTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId", Matchers.equalTo(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accountNumber", Matchers.is(Matchers.not(Matchers.emptyString()))));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.userId", Matchers.equalTo(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accountNumber", Matchers.is(Matchers.not(Matchers.emptyString()))));
     }
 }

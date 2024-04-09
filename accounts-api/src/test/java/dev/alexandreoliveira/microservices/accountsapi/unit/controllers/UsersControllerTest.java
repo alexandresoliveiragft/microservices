@@ -1,12 +1,14 @@
 package dev.alexandreoliveira.microservices.accountsapi.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.alexandreoliveira.microservices.accountsapi.controllers.UserController;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.UsersController;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
-import org.hamcrest.Matchers;
+import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -27,9 +29,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-@WebMvcTest(UserController.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserControllerTest {
+@WebMvcTest(UsersController.class)
+class UsersControllerTest extends UnitTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -62,9 +63,9 @@ class UserControllerTest {
 
         mockMvc
                 .perform(request)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(Matchers.not(Matchers.emptyArray()))));
+                .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
     }
 
     static Stream<String> shouldExpectedErrorToSendWrongDataSource() {
@@ -96,7 +97,8 @@ class UserControllerTest {
         savedUser.setEmail("alexandre@email.com");
         savedUser.setMobileNumber("31933334444");
 
-        UserDTO requestDto = new ObjectMapper().readValue(requestData, UserDTO.class);
+        UserControllerCreateRequest requestDto = new ObjectMapper()
+                .readValue(requestData, UserControllerCreateRequest.class);
 
         Mockito.doReturn(savedUser).when(mockUserService).createUser(requestDto);
 
@@ -104,7 +106,7 @@ class UserControllerTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber());
     }
 
     @Test
@@ -136,7 +138,35 @@ class UserControllerTest {
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accounts").isArray());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accounts").isArray());
+    }
+
+    @Test
+    @Order(4)
+    void shouldExpectedAnExceptionWhenDataExists() throws Exception {
+        var requestData = """
+                {
+                	"name": "Alexandre Salvador de Oliveira",
+                	"email": "alexandre@email.com",
+                	"mobileNumber": "31933334444"
+                }
+                """.getBytes(StandardCharsets.UTF_8);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestData);
+
+        UserControllerCreateRequest requestDto = new ObjectMapper()
+                .readValue(requestData, UserControllerCreateRequest.class);
+
+        Mockito.when(mockUserService.createUser(requestDto))
+                .thenThrow(new ServiceException("This email / mobileNumber exists"));
+
+        mockMvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
     }
 }

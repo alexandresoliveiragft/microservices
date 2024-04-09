@@ -1,0 +1,89 @@
+version: "3.8"
+
+x-aosoluti-microservices-database-common:
+  &aosoluti-microservices-database-common
+  image: docker.io/bitnami/postgresql:16-alpine
+  networks:
+    - aosoluti-microservices-network
+  deploy:
+    resources:
+      limits:
+        memory: 64M
+
+services:
+  aosoluti-microservices-accounts-api-primary-db:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-accounts-api-primary-db
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=dev_replica
+      - POSTGRESQL_REPLICATION_PASSWORD=dev
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_DATABASE=aosoluti-microservices-accounts-api-db
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5432:5432
+    volumes:
+      - "./volumes/aosoluti-microservices-accounts-api-db/primary:/bitnami/postgresql"
+  aosoluti-microservices-accounts-api-replica-db:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-accounts-api-replica-db
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=dev_replica
+      - POSTGRESQL_REPLICATION_PASSWORD=dev
+      - POSTGRESQL_MASTER_HOST=aosoluti-microservices-accounts-api-primary-db
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5436:5432
+    volumes:
+      - "./volumes/aosoluti-microservices-accounts-api-db/replica:/bitnami/postgresql"
+    depends_on:
+      - aosoluti-microservices-accounts-api-primary-db
+#  kafka:
+#    image: docker.io/bitnami/kafka:3.6
+#    container_name: aosoluti-microservices-kafka
+#    ports:
+#      - "9092:9092"
+#    networks:
+#      - aosoluti-microservices-network
+#    volumes:
+#      - "./volumes/aosoluti-microservices-kafka:/bitnami"
+#    environment:
+#      - KAFKA_CFG_NODE_ID=0
+#      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+#      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+#      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+#      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+#      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+#      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+#      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+#      - KAFKA_HEAP_OPTS=-Xms192m -Xmx256m
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 256M
+#  kafdrop:
+#    image: obsidiandynamics/kafdrop:4.0.1
+#    container_name: aosoluti-microservices-kafka-helper
+#    environment:
+#      - KAFKA_BROKERCONNECT=kafka:9092
+#      - JVM_OPTS=-Xms192m -Xmx256m
+#    networks:
+#      - aosoluti-microservices-network
+#    ports:
+#      - "19000:9000"
+#    depends_on:
+#      - kafka
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 256M
+
+networks:
+  aosoluti-microservices-network:
+    driver: bridge

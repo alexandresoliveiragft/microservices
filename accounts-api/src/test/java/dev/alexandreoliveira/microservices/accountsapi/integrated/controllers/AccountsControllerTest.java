@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.nio.charset.StandardCharsets;
 
 @AutoConfigureMockMvc
-class AccountControllerTest extends IntegratedTest {
+class AccountsControllerTest extends IntegratedTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -38,9 +38,9 @@ class AccountControllerTest extends IntegratedTest {
 
         mockMvc
                 .perform(request)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(Matchers.not(Matchers.emptyArray()))));
+                .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
     }
 
     @Test
@@ -61,9 +61,9 @@ class AccountControllerTest extends IntegratedTest {
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(Matchers.not(Matchers.emptyArray()))))
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.contains("User not found")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.contains("User not found")));
     }
 
     @Test
@@ -94,6 +94,6 @@ class AccountControllerTest extends IntegratedTest {
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accountNumber").isNotEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accountNumber").isNotEmpty());
     }
 }

@@ -10,6 +10,8 @@ import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -19,9 +21,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 @AutoConfigureMockMvc
-class UserControllerTest extends IntegratedTest {
+class UsersControllerTest extends IntegratedTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -44,9 +47,9 @@ class UserControllerTest extends IntegratedTest {
 
         mockMvc
                 .perform(request)
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.is(Matchers.not(Matchers.emptyArray()))));
+                .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
     }
 
     @Test
@@ -69,7 +72,7 @@ class UserControllerTest extends IntegratedTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber());
     }
 
     @Test
@@ -91,7 +94,7 @@ class UserControllerTest extends IntegratedTest {
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber());
     }
 
     @Test
@@ -123,9 +126,60 @@ class UserControllerTest extends IntegratedTest {
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accounts").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accounts[*].accountNumber").isNotEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accounts").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accounts[*].accountNumber").isNotEmpty());
     }
 
+
+
+    @ParameterizedTest
+    @MethodSource("shouldExpectedAnExceptionWhenTryToCreateUsersWithSameEmailOrMobileNumberSource")
+    @Order(5)
+    void shouldExpectedAnExceptionWhenTryToCreateUsersWithSameEmailOrMobileNumber(byte[] data) throws Exception {
+        var user = new UserEntity();
+        user.setName("Name");
+        user.setEmail("alexandre@email.com");
+        user.setMobileNumber("31933334444");
+
+        UserEntity savedUser = userRepository.save(user);
+
+        Assertions.assertThat(savedUser).isNotNull();
+        Assertions.assertThat(savedUser.getId()).isPositive().isEqualTo(1L);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(data);
+
+        mockMvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", Matchers.contains("This email / mobileNumber exists")));
+    }
+
+    static Stream<byte[]> shouldExpectedAnExceptionWhenTryToCreateUsersWithSameEmailOrMobileNumberSource() {
+        var requestData_email = """
+                {
+                	"name": "Alexandre Salvador de Oliveira",
+                	"email": "alexandre@email.com",
+                	"mobileNumber": "31933334422"
+                }
+                """.getBytes(StandardCharsets.UTF_8);
+
+        var requestData_mobile_number = """
+                {
+                	"name": "Alexandre Salvador de Oliveira",
+                	"email": "not-same-email@email.com",
+                	"mobileNumber": "31933334444"
+                }
+                """.getBytes(StandardCharsets.UTF_8);
+
+        return Stream.of(
+                requestData_email,
+                requestData_mobile_number
+        );
+    }
 }

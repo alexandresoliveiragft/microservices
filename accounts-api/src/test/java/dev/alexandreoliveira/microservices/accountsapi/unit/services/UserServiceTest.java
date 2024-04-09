@@ -1,5 +1,6 @@
 package dev.alexandreoliveira.microservices.accountsapi.unit.services;
 
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
@@ -7,6 +8,8 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Use
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserServiceImpl;
+import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,8 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserServiceTest {
+class UserServiceTest extends UnitTest {
 
     @Mock
     UserRepository mockUserRepository;
@@ -71,10 +73,11 @@ class UserServiceTest {
                 userMapper
         );
 
-        var fakeData = new UserDTO();
-        fakeData.setName("Fake");
-        fakeData.setEmail("fake@email.com");
-        fakeData.setMobileNumber("31911112222");
+        var fakeData = new UserControllerCreateRequest(
+                "Fake",
+                "fake@email.com",
+                "31911112222"
+        );
 
         UserDTO savedUser = sut.createUser(fakeData);
 
@@ -142,5 +145,31 @@ class UserServiceTest {
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
         Assertions.assertThat(userDTO.getAccounts()).isNotEmpty();
+    }
+
+    @Test
+    @Order(4)
+    void shouldExpectedAnExceptionWhenEmailOrMobileNumberExists() {
+        var fakeUser = new UserControllerCreateRequest(
+                "fake",
+                "fake@email.com",
+                "31911112222"
+        );
+
+        Mockito.when(mockUserRepository.findByEmailOrMobileNumber(fakeUser.email(), fakeUser.mobileNumber()))
+                .thenReturn(Optional.of(new UserEntity()));
+
+        var sut = new UserServiceImpl(
+                mockUserRepository,
+                Mappers.getMapper(UserMapper.class)
+        );
+
+        ServiceException serviceException = org.junit.jupiter.api.Assertions.assertThrows(
+                ServiceException.class,
+                () -> sut.createUser(fakeUser),
+                "Expected a error occur here");
+
+        Assertions.assertThat(serviceException).isNotNull();
+        Assertions.assertThat(serviceException.getMessage()).isNotBlank();
     }
 }

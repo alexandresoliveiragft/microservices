@@ -1,5 +1,7 @@
 package dev.alexandreoliveira.microservices.accountsapi.controllers;
 
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDTO;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,27 +30,27 @@ import java.net.URI;
 @RestController
 @RequestMapping("users")
 @RequiredArgsConstructor
-public class UserController {
+public class UsersController {
 
     private final UserService userService;
 
     @Operation(
-            summary = "Create a new user."
+            summary = "Create a new request."
     )
     @ApiResponse(
             responseCode = "201",
-            description = "Details for created user.",
+            description = "Details for created request.",
             headers = {
-                    @Header(name = "location", description = "Link to recover a user for more details")
+                    @Header(name = "location", description = "Link to recover a request for more details")
             }
     )
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserDTO> create(
-            @Valid @RequestBody UserDTO user,
+    public ResponseEntity<ResponseDTO<UserDTO>> create(
+            @Valid @RequestBody UserControllerCreateRequest request,
             UriComponentsBuilder uriComponentsBuilder) {
-        UserDTO userSaved = userService.createUser(user);
-        URI uri = uriComponentsBuilder.path("users/{id}").buildAndExpand(userSaved.getId()).toUri();
-        return ResponseEntity.created(uri).body(userSaved);
+        UserDTO dto = userService.createUser(request);
+        URI uri = uriComponentsBuilder.path("users/{id}").buildAndExpand(dto.getId()).toUri();
+        return ResponseEntity.created(uri).body(new ResponseDTO<>(dto, HttpStatus.CREATED.value()));
     }
 
     @Operation(
@@ -58,8 +61,9 @@ public class UserController {
             description = "Details for created user and accounts if exists."
     )
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<UserDTO> show(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(userService.find(id));
+    public ResponseEntity<ResponseDTO<UserDTO>> show(@PathVariable("id") Long id) {
+        UserDTO dto = userService.find(id);
+        return ResponseEntity.ok(new ResponseDTO<>(dto, HttpStatus.OK.value()));
     }
 
 }

@@ -1,5 +1,6 @@
 package dev.alexandreoliveira.microservices.accountsapi.unit.services;
 
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts.AccountControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
@@ -7,10 +8,10 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Acc
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
-import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapperImpl;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountServiceImpl;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +24,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ResourceUtils;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AccountServiceTest {
+class AccountServiceTest extends UnitTest {
 
     @Mock
     AccountRepository mockAccountRepository;
@@ -65,9 +63,10 @@ class AccountServiceTest {
                 accountMapper
         );
 
-        var fakeAccount = new AccountDTO();
-        fakeAccount.setUserId(0L);
-        fakeAccount.setAccountType(AccountTypeEnum.PF.name());
+        var fakeAccount = new AccountControllerCreateRequest(
+                0L,
+                AccountTypeEnum.PF.name()
+        );
 
         ServiceException serviceException = Assertions.assertThrows(
                 ServiceException.class,
@@ -114,9 +113,10 @@ class AccountServiceTest {
                 accountMapper
         );
 
-        var fakeAccount = new AccountDTO();
-        fakeAccount.setUserId(0L);
-        fakeAccount.setAccountType(AccountTypeEnum.PF.name());
+        var fakeAccount = new AccountControllerCreateRequest(
+                0L,
+                AccountTypeEnum.PF.name()
+        );
 
         AccountDTO account = sut.createAccount(fakeAccount);
 

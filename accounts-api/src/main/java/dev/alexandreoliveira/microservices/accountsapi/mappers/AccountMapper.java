@@ -1,5 +1,6 @@
 package dev.alexandreoliveira.microservices.accountsapi.mappers;
 
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts.AccountControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
@@ -11,6 +12,10 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface AccountMapper {
+
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "accountType", target = "accountType")
+    AccountDTO toDTO(AccountControllerCreateRequest request);
 
     @Mapping(source = "accountType", target = "accountType", qualifiedByName = "toTransformAccountType")
     @Mapping(source = "dto", target = "user", qualifiedByName = "toEntityByAccount")
