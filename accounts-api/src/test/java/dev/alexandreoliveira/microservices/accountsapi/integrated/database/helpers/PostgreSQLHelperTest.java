@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -23,11 +24,12 @@ import org.testcontainers.utility.DockerImageName;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE, connection = EmbeddedDatabaseConnection.NONE)
 @EnableJpaAuditing
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("tst-with-postgresql-16")
 public class PostgreSQLHelperTest {
 
     @Container
     static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
-            .withDatabaseName("aosoluti-microservices-accounts-api-db")
+            .withDatabaseName("aosoluti-microservices-accounts-api-tst-db")
             .withUsername("test")
             .withPassword("test");
 
@@ -40,9 +42,9 @@ public class PostgreSQLHelperTest {
         registry.add("spring.datasource.username", postgresqlContainer::getUsername);
         registry.add("spring.datasource.password", postgresqlContainer::getPassword);
         registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
-        registry.add("spring.flyway.url", postgresqlContainer::getJdbcUrl);
-        registry.add("spring.flyway.user", postgresqlContainer::getUsername);
-        registry.add("spring.flyway.password", postgresqlContainer::getPassword);
-        registry.add("spring.flyway.encoding", () -> "UTF-8");
+//        registry.add("spring.flyway.url", postgresqlContainer::getJdbcUrl);
+//        registry.add("spring.flyway.user", postgresqlContainer::getUsername);
+//        registry.add("spring.flyway.password", postgresqlContainer::getPassword);
+//        registry.add("spring.flyway.encoding", () -> "UTF-8");
     }
 }

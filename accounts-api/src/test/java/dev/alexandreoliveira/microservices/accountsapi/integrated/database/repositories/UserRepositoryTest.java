@@ -52,9 +52,9 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         Assertions.assertThat(savedUser.getId()).isPositive();
         Assertions.assertThat(savedUser.getVersion()).isNotNull();
         Assertions.assertThat(savedUser.getCreatedAt()).isNotNull();
-        Assertions.assertThat(savedUser.getCreatedBy()).isNotNull();
+        Assertions.assertThat(savedUser.getCreatedBy()).isNotBlank();
         Assertions.assertThat(savedUser.getUpdatedAt()).isNotNull();
-        Assertions.assertThat(savedUser.getUpdatedBy()).isNotNull();
+        Assertions.assertThat(savedUser.getUpdatedBy()).isNotBlank();
     }
 
     @ParameterizedTest
@@ -159,7 +159,7 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
 
         @Bean
         public AuditorAware<String> auditorAware() {
-            return () -> Optional.of("test");
+            return () -> Optional.of("user test");
         }
     }
 }
