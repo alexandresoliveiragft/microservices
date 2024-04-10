@@ -13,10 +13,8 @@ import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -156,7 +154,7 @@ class UserServiceTest extends UnitTest {
                 "31911112222"
         );
 
-        Mockito.when(mockUserRepository.findByEmailOrMobileNumber(fakeUser.email(), fakeUser.mobileNumber()))
+        Mockito.when(mockUserRepository.findByEmailIgnoreCaseOrMobileNumber(fakeUser.email(), fakeUser.mobileNumber()))
                 .thenReturn(Optional.of(new UserEntity()));
 
         var sut = new UserServiceImpl(

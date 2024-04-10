@@ -5,9 +5,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.test.annotation.DirtiesContext;
@@ -17,8 +14,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import java.util.Optional;
 
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -38,7 +33,6 @@ public class PostgreSQLHelperTest {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.profiles.active", () -> "test-with-postgressql-16");
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
         registry.add("spring.jpa.show-sql", () -> "true");
         registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.PostgreSQLDialect");

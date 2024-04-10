@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserControllerCreateRequest request) {
-        if (userRepository.findByEmailOrMobileNumber(request.email(), request.mobileNumber()).isPresent()) {
+        if (userRepository.findByEmailIgnoreCaseOrMobileNumber(request.email(), request.mobileNumber()).isPresent()) {
             throw new ServiceException("This email / mobileNumber exists");
         }
 

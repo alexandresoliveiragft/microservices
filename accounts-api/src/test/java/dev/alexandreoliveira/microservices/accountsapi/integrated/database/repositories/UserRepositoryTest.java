@@ -5,7 +5,7 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Use
 import dev.alexandreoliveira.microservices.accountsapi.integrated.database.helpers.PostgreSQLHelperTest;
 import org.assertj.core.api.Assertions;
 import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -32,8 +33,8 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
     @Autowired
     PlatformTransactionManager platformTransactionManager;
 
-    @BeforeEach
-    void beforeEach() {
+    @AfterEach
+    void afterEach() {
         userRepository.deleteAll();
     }
 
@@ -100,6 +101,57 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
                 userErrorEmail,
                 userErrorMobileNumber
         );
+    }
+
+    @Test
+    @Order(3)
+    void shouldExpectedToFoundUserWithEmailOrMobileNumber() {
+        var fakeUser = new UserEntity();
+        fakeUser.setName("Fake User");
+        fakeUser.setEmail("fake-user@email.com");
+        fakeUser.setMobileNumber("+5531911112222");
+
+        UserEntity savedUser = userRepository.save(fakeUser);
+
+        Assertions.assertThat(savedUser.getId()).isPositive();
+
+        Optional<UserEntity> optionalUserFoundWithEmail = userRepository
+                .findByEmailIgnoreCaseOrMobileNumber(fakeUser.getEmail(), "13");
+
+        Assertions.assertThat(optionalUserFoundWithEmail.isPresent()).isTrue();
+
+        Optional<UserEntity> optionalUserFoundWithMobileNumber = userRepository
+                .findByEmailIgnoreCaseOrMobileNumber("user@email.com", fakeUser.getMobileNumber());
+
+        Assertions.assertThat(optionalUserFoundWithMobileNumber.isPresent()).isTrue();
+
+        Optional<UserEntity> optionalUserFoundWithEmailToUpperCase = userRepository
+                .findByEmailIgnoreCaseOrMobileNumber(
+                        fakeUser.getEmail().toLowerCase(Locale.ROOT),
+                        "5");
+
+        Assertions.assertThat(optionalUserFoundWithEmailToUpperCase.isPresent()).isTrue();
+    }
+
+    @Test
+    @Order(4)
+    void shouldExpectedToFoundUserById() {
+        var fakeUser = new UserEntity();
+        fakeUser.setName("Fake User");
+        fakeUser.setEmail("fake-user@email.com");
+        fakeUser.setMobileNumber("+5531911112222");
+
+        UserEntity savedUser = userRepository.save(fakeUser);
+
+        Assertions.assertThat(savedUser.getId()).isPositive();
+
+        Optional<UserEntity> optionalUserFound = userRepository.findById(savedUser.getId());
+
+        Assertions.assertThat(optionalUserFound.isPresent()).isTrue();
+
+        Optional<UserEntity> optionalUserNotFound = userRepository.findById(-1L);
+
+        Assertions.assertThat(optionalUserNotFound.isPresent()).isFalse();
     }
 
     @TestConfiguration
