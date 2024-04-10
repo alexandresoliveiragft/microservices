@@ -68,8 +68,8 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
 
         userRepository.save(user);
 
-        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(
-                Exception.class,
+        DataIntegrityViolationException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                DataIntegrityViolationException.class,
                 () -> new TransactionTemplate(platformTransactionManager).execute(status ->
                         userRepository.save(userError)
                 ),
@@ -77,7 +77,12 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         );
 
         Assertions.assertThat(exception).isNotNull();
+        Assertions.assertThat(exception.getMessage())
+                .containsAnyOf(
+                        String.format("(email)=(%s) already exists.", userError.getEmail()),
+                        String.format("(mobile_number)=(%s) already exists.", userError.getMobileNumber()));
         Assertions.assertThat(exception.getCause()).isNotNull();
+        Assertions.assertThat(exception.getCause()).isInstanceOf(ConstraintViolationException.class);
     }
 
     static Stream<UserEntity> shouldExpectedAnExceptionWhenTryToInsertTheSameDataSource() {
@@ -86,7 +91,7 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         userErrorEmail.setEmail("fake-user@email.com");
         userErrorEmail.setMobileNumber("+5531911112223");
 
-        var userErrorMobileNumber= new UserEntity();
+        var userErrorMobileNumber = new UserEntity();
         userErrorMobileNumber.setName("Fake User");
         userErrorMobileNumber.setEmail("user@email.com");
         userErrorMobileNumber.setMobileNumber("+5531911112222");

@@ -26,7 +26,7 @@ public class UserEntity  extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "mobile_number", nullable = false, length = 100)
+    @Column(name = "mobile_number", nullable = false, unique = true, length = 100)
     private String mobileNumber;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
