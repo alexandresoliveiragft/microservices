@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 class UserServiceTest extends UnitTest {
 
@@ -47,7 +48,7 @@ class UserServiceTest extends UnitTest {
     @Order(1)
     void shouldExpectedACorrectUser() {
         var fakeUser = new UserEntity();
-        fakeUser.setId(1L);
+        fakeUser.setId(UUID.randomUUID());
         fakeUser.setName("Fake");
         fakeUser.setEmail("fake@email.com");
         fakeUser.setMobileNumber("31911112222");
@@ -79,14 +80,16 @@ class UserServiceTest extends UnitTest {
 
         UserDTO savedUser = sut.createUser(fakeData);
 
-        Assertions.assertThat(savedUser.getId()).isPositive();
+        Assertions.assertThat(savedUser.getId()).isNotNull();
     }
 
     @Test
     @Order(2)
     void shouldToReturnACorrectUser() {
+        UUID uuid = UUID.randomUUID();
+
         var fakeUser = new UserEntity();
-        fakeUser.setId(1L);
+        fakeUser.setId(uuid);
         fakeUser.setName("Fake");
         fakeUser.setEmail("fake@email.com");
         fakeUser.setMobileNumber("31911112222");
@@ -96,7 +99,7 @@ class UserServiceTest extends UnitTest {
         fakeUser.setUpdatedBy("test");
         fakeUser.setVersion(LocalDateTime.now());
 
-        Mockito.when(mockUserRepository.findById(1L)).thenReturn(Optional.of(fakeUser));
+        Mockito.when(mockUserRepository.findById(uuid)).thenReturn(Optional.of(fakeUser));
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -105,7 +108,7 @@ class UserServiceTest extends UnitTest {
                 userMapper
         );
 
-        UserDTO userDTO = sut.find(1L);
+        UserDTO userDTO = sut.find(uuid);
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
     }
@@ -113,13 +116,16 @@ class UserServiceTest extends UnitTest {
     @Test
     @Order(3)
     void shouldToReturnACorrectUserWithAccount() {
+        UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
         var fakeAccount = new AccountEntity();
-        fakeAccount.setId(1L);
+        fakeAccount.setId(accountId);
         fakeAccount.setAccountType(AccountTypeEnum.PF);
         fakeAccount.setAccountNumber("0102030405");
 
         var fakeUser = new UserEntity();
-        fakeUser.setId(1L);
+        fakeUser.setId(userId);
         fakeUser.setName("Fake");
         fakeUser.setEmail("fake@email.com");
         fakeUser.setMobileNumber("31911112222");
@@ -130,7 +136,7 @@ class UserServiceTest extends UnitTest {
         fakeUser.setUpdatedBy("test");
         fakeUser.setVersion(LocalDateTime.now());
 
-        Mockito.when(mockUserRepository.findById(1L)).thenReturn(Optional.of(fakeUser));
+        Mockito.when(mockUserRepository.findById(userId)).thenReturn(Optional.of(fakeUser));
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -139,7 +145,7 @@ class UserServiceTest extends UnitTest {
                 userMapper
         );
 
-        UserDTO userDTO = sut.find(1L);
+        UserDTO userDTO = sut.find(userId);
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
         Assertions.assertThat(userDTO.getAccounts()).isNotEmpty();

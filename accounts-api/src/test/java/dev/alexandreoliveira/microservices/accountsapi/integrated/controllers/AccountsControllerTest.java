@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @AutoConfigureMockMvc
 class AccountsControllerTest extends IntegratedTest {
@@ -46,12 +47,16 @@ class AccountsControllerTest extends IntegratedTest {
     @Test
     @Order(2)
     void shouldExpectedErrorWhenUserNotFound() throws Exception {
+        UUID userId = UUID.randomUUID();
+
         var requestData = """
                 {
-                    "userId": 0,
+                    "userId": ":userId",
                     "accountType": "PF"
                 }
-                """.getBytes(StandardCharsets.UTF_8);
+                """
+                .replaceAll(":userId", userId.toString())
+                .getBytes(StandardCharsets.UTF_8);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post("/accounts")
@@ -77,14 +82,16 @@ class AccountsControllerTest extends IntegratedTest {
         UserEntity savedUserEntity = userRepository.save(user);
 
         Assertions.assertThat(savedUserEntity).isNotNull();
-        Assertions.assertThat(savedUserEntity.getId()).isPositive().isEqualTo(1L);
+        Assertions.assertThat(savedUserEntity.getId()).isNotNull();
 
         var requestData = """
                 {
-                    "userId": 1,
+                    "userId": ":userId",
                     "accountType": "PF"
                 }
-                """.getBytes(StandardCharsets.UTF_8);
+                """
+                .replaceAll(":userId", savedUserEntity.getId().toString())
+                .getBytes(StandardCharsets.UTF_8);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post("/accounts")

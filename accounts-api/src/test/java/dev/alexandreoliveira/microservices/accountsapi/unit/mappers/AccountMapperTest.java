@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -36,12 +37,12 @@ class AccountMapperTest {
     @Order(2)
     void shouldExpectedToDTOMethodReturnDtoWhenRequestDataIsCorrect() {
         var request = new AccountControllerCreateRequest(
-                1L,
+                UUID.randomUUID(),
                 AccountTypeEnum.PF.name()
         );
         AccountDTO dto = accountMapper.toDTO(request);
         Assertions.assertThat(dto).isNotNull();
-        Assertions.assertThat(dto.getUserId()).isPositive();
+        Assertions.assertThat(dto.getUserId()).isNotNull();
         Assertions.assertThat(dto.getAccountType()).isNotBlank();
     }
 
@@ -57,16 +58,16 @@ class AccountMapperTest {
     void shouldExpectedToEntityMethodReturnEntityWhenDtoDataIsCorrect() {
         var dto = new AccountDTO();
         dto.setAccountType(AccountTypeEnum.PJ.name());
-        dto.setUserId(1L);
-        dto.setId(1L);
+        dto.setUserId(UUID.randomUUID());
+        dto.setId(UUID.randomUUID());
         dto.setAccountNumber("0010020034");
         ReflectionTestUtils.setField(accountMapper, "userMapper", userMapper);
         AccountEntity entity = accountMapper.toEntity(dto);
         Assertions.assertThat(entity).isNotNull();
-        Assertions.assertThat(entity.getId()).isPositive();
+        Assertions.assertThat(entity.getId()).isNotNull();
         Assertions.assertThat(entity.getAccountNumber()).isNotBlank();
         Assertions.assertThat(entity.getUser()).isNotNull();
-        Assertions.assertThat(entity.getUser().getId()).isPositive();
+        Assertions.assertThat(entity.getUser().getId()).isNotNull();
     }
 
     @Test
@@ -80,18 +81,18 @@ class AccountMapperTest {
     @Order(6)
     void shouldExpectedToDtoMethodReturnDtoWhenEntityDataIsCorrect() {
         var user = new UserEntity();
-        user.setId(1L);
+        user.setId(UUID.randomUUID());
         var account = new AccountEntity();
         account.setAccountType(AccountTypeEnum.PJ);
         account.setUser(user);
-        account.setId(1L);
+        account.setId(UUID.randomUUID());
         account.setAccountNumber("0010020034");
         ReflectionTestUtils.setField(accountMapper, "userMapper", userMapper);
         AccountDTO dto = accountMapper.toDto(account);
         Assertions.assertThat(dto).isNotNull();
-        Assertions.assertThat(dto.getId()).isPositive();
+        Assertions.assertThat(dto.getId()).isNotNull();
         Assertions.assertThat(dto.getAccountNumber()).isNotBlank();
-        Assertions.assertThat(dto.getUserId()).isPositive();
+        Assertions.assertThat(dto.getUserId()).isNotNull();
     }
 
     @Test

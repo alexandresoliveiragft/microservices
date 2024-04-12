@@ -1,5 +1,5 @@
 server:
-  port: 8070
+  port: 8080
 spring:
   application:
     name: accounts-api
@@ -7,14 +7,43 @@ spring:
     active: dev
   jpa:
     show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
   datasource:
-    url: jdbc:h2:mem:accounts-api-db
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+    url: jdbc:postgresql://localhost:5432/aosoluti-microservices-accounts-api-db
+    username: dev
+    password: dev
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 2
+      idle-timeout: 10000
+      max-lifetime: 60000
+      connection-timeout: 5000
+      pool-name: AccountsApiHikariPool
+  flyway:
+    url: jdbc:postgresql://localhost:5432/aosoluti-microservices-accounts-api-db
+    user: dev
+    password: dev
+    encoding: UTF-8
+    baseline-on-migrate: true
+    clean-disabled: true
+    locations:
+      - "db/migrations/postgresql"
+    enabled: true
+  servlet:
+    multipart:
+      enabled: false
+  jackson:
+    default-property-inclusion: NON_NULL
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace
+        type:
+          descriptor:
+            sql: trace

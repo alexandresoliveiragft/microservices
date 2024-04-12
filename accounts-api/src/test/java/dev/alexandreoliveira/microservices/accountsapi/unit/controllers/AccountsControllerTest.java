@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @WebMvcTest(AccountsController.class)
@@ -80,12 +81,16 @@ class AccountsControllerTest extends UnitTest {
     @Test
     @Order(2)
     void shouldExpectedErrorWhenUserNotFound() throws Exception {
+        UUID userId = UUID.randomUUID();
+
         var requestData = """
                 {
-                    "userId": 0,
+                    "userId": ":userId",
                     "accountType": "PF"
                 }
-                """.getBytes(StandardCharsets.UTF_8);
+                """
+                .replaceAll(":userId", userId.toString())
+                .getBytes(StandardCharsets.UTF_8);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post("/accounts")
@@ -93,7 +98,7 @@ class AccountsControllerTest extends UnitTest {
                 .content(requestData);
 
         var fakeAccount = new AccountControllerCreateRequest(
-                0L,
+                userId,
                 AccountTypeEnum.PF.name()
         );
 
@@ -109,14 +114,17 @@ class AccountsControllerTest extends UnitTest {
     @Test
     @Order(3)
     void mustBeOkWhenDataIsCorrect() throws Exception {
+        UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
         var fakeAccount = new AccountDTO();
-        fakeAccount.setId(1L);
+        fakeAccount.setId(accountId);
         fakeAccount.setAccountType(AccountTypeEnum.PF.name());
-        fakeAccount.setUserId(1L);
+        fakeAccount.setUserId(userId);
         fakeAccount.setAccountNumber("0001000203");
 
         var expectedData = new AccountControllerCreateRequest(
-                1L,
+                userId,
                 AccountTypeEnum.PF.name()
         );
 
@@ -124,10 +132,12 @@ class AccountsControllerTest extends UnitTest {
 
         var requestData = """
                 {
-                    "userId": 1,
+                    "userId": ":userId",
                     "accountType": "PF"
                 }
-                """.getBytes(StandardCharsets.UTF_8);
+                """
+                .replaceAll(":userId", userId.toString())
+                .getBytes(StandardCharsets.UTF_8);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post("/accounts")
@@ -138,7 +148,7 @@ class AccountsControllerTest extends UnitTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.userId", Matchers.equalTo(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.userId", Matchers.equalTo(userId.toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.accountNumber", Matchers.is(Matchers.not(Matchers.emptyString()))));
     }
 }

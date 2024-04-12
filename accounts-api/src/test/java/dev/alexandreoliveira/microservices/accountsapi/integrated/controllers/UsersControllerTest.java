@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @AutoConfigureMockMvc
@@ -72,7 +73,7 @@ class UsersControllerTest extends IntegratedTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNotEmpty());
     }
 
     @Test
@@ -86,15 +87,15 @@ class UsersControllerTest extends IntegratedTest {
         UserEntity savedUser = userRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
-        Assertions.assertThat(savedUser.getId()).isPositive().isEqualTo(1L);
+        Assertions.assertThat(savedUser.getId()).isNotNull();
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get("/users/1");
+                .get("/users/" + savedUser.getId());
 
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNotEmpty());
     }
 
     @Test
@@ -108,7 +109,7 @@ class UsersControllerTest extends IntegratedTest {
         UserEntity savedUser = userRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
-        Assertions.assertThat(savedUser.getId()).isPositive().isEqualTo(1L);
+        Assertions.assertThat(savedUser.getId()).isNotNull();
 
         var account = new AccountEntity();
         account.setAccountType(AccountTypeEnum.PF);
@@ -117,16 +118,16 @@ class UsersControllerTest extends IntegratedTest {
         AccountEntity savedAccount = accountRepository.save(account);
 
         Assertions.assertThat(savedAccount).isNotNull();
-        Assertions.assertThat(savedAccount.getId()).isPositive().isEqualTo(1L);
+        Assertions.assertThat(savedAccount.getId()).isNotNull();
         Assertions.assertThat(savedAccount.getAccountNumber()).isNotBlank();
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get("/users/1");
+                .get("/users/" + savedUser.getId());
 
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.accounts").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.accounts[*].accountNumber").isNotEmpty());
     }
@@ -145,7 +146,7 @@ class UsersControllerTest extends IntegratedTest {
         UserEntity savedUser = userRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
-        Assertions.assertThat(savedUser.getId()).isPositive().isEqualTo(1L);
+        Assertions.assertThat(savedUser.getId()).isNotNull();
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post("/users")

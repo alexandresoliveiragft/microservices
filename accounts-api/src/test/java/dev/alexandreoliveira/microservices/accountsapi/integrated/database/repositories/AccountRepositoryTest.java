@@ -55,7 +55,7 @@ class AccountRepositoryTest extends PostgreSQLHelperTest {
         Assertions.assertThat(savedAccount).isNotNull();
 
         Assertions.assertThat(savedAccount).isNotNull();
-        Assertions.assertThat(savedAccount.getId()).isPositive();
+        Assertions.assertThat(savedAccount.getId()).isNotNull();
         Assertions.assertThat(savedAccount.getVersion()).isNotNull();
         Assertions.assertThat(savedAccount.getCreatedAt()).isNotNull();
         Assertions.assertThat(savedAccount.getCreatedBy()).isNotBlank();
@@ -78,7 +78,7 @@ class AccountRepositoryTest extends PostgreSQLHelperTest {
 
         AccountEntity savedAccount = accountRepository.save(fakeAccount);
 
-        Assertions.assertThat(savedAccount.getId()).isPositive();
+        Assertions.assertThat(savedAccount.getId()).isNotNull();
 
         DataIntegrityViolationException exception = org.junit.jupiter.api.Assertions.assertThrows(
                 DataIntegrityViolationException.class,

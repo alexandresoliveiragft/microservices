@@ -15,10 +15,8 @@ import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -27,6 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 class AccountServiceTest extends UnitTest {
 
@@ -53,7 +52,9 @@ class AccountServiceTest extends UnitTest {
     @Test
     @Order(1)
     void shouldExpectedExceptionWhenUserNotFound() {
-        Mockito.doReturn(Optional.empty()).when(mockUserRepository).findById(0L);
+        UUID userId = UUID.randomUUID();
+
+        Mockito.doReturn(Optional.empty()).when(mockUserRepository).findById(userId);
 
         AccountMapper accountMapper = Mappers.getMapper(AccountMapper.class);
 
@@ -64,7 +65,7 @@ class AccountServiceTest extends UnitTest {
         );
 
         var fakeAccount = new AccountControllerCreateRequest(
-                0L,
+                userId,
                 AccountTypeEnum.PF.name()
         );
 
@@ -80,18 +81,21 @@ class AccountServiceTest extends UnitTest {
     @Test
     @Order(2)
     void shouldExpectedAValidData() {
+        UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
         var fakeUser = new UserEntity();
-        fakeUser.setId(0L);
+        fakeUser.setId(userId);
         fakeUser.setName("Fake");
         fakeUser.setEmail("fake@email.com");
         fakeUser.setMobileNumber("01901010101");
         fakeUser.setCreatedAt(LocalDateTime.now());
         fakeUser.setCreatedBy("test");
 
-        Mockito.doReturn(Optional.of(fakeUser)).when(mockUserRepository).findById(0L);
+        Mockito.doReturn(Optional.of(fakeUser)).when(mockUserRepository).findById(userId);
 
         var expectedFakeAccount = new AccountEntity();
-        expectedFakeAccount.setId(0L);
+        expectedFakeAccount.setId(accountId);
         expectedFakeAccount.setAccountNumber("0101101001");
         expectedFakeAccount.setAccountType(AccountTypeEnum.PF);
         expectedFakeAccount.setUser(fakeUser);
@@ -114,7 +118,7 @@ class AccountServiceTest extends UnitTest {
         );
 
         var fakeAccount = new AccountControllerCreateRequest(
-                0L,
+                userId,
                 AccountTypeEnum.PF.name()
         );
 

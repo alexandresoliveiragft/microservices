@@ -9,6 +9,8 @@ import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.Servi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -29,7 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO find(Long id) {
+    public UserDTO find(UUID id) {
         UserEntity userFound = userRepository.findById(id).orElseThrow(() -> new ServiceException("User not found"));
         return userMapper.toDto(userFound);
     }

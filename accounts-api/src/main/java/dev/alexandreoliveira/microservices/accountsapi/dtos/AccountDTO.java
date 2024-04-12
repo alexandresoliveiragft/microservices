@@ -1,21 +1,19 @@
 package dev.alexandreoliveira.microservices.accountsapi.dtos;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+
+import java.util.UUID;
 
 @Data
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class AccountDTO {
-
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+public class AccountDTO extends BaseDTO {
 
     @NotNull
-    private Long userId;
+    private UUID userId;
 
     private String accountNumber;
 

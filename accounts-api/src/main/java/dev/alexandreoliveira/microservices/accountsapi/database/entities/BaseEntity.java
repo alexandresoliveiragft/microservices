@@ -8,21 +8,24 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.id.uuid.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @MappedSuperclass
 @Data
-public class BaseEntity {
+class BaseEntity {
 
     @Id
-    @GeneratedValue(generator = "native", strategy = GenerationType.AUTO)
-    @GenericGenerator(name = "native", strategy = "native")
-    private Long id;
+    @Column(name = "id")
+    @GeneratedValue(generator = "hibernate-uuid")
+    @GenericGenerator(name = "uuid", type = UuidGenerator.class)
+    private UUID id;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @WebMvcTest(UsersController.class)
@@ -92,7 +93,7 @@ class UsersControllerTest extends UnitTest {
                 .content(requestData);
 
         var savedUser = new UserDTO();
-        savedUser.setId(1L);
+        savedUser.setId(UUID.randomUUID());
         savedUser.setName("Alexandre Salvador de Oliveira");
         savedUser.setEmail("alexandre@email.com");
         savedUser.setMobileNumber("31933334444");
@@ -106,39 +107,44 @@ class UsersControllerTest extends UnitTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNotEmpty());
     }
 
     @Test
     @Order(3)
     void shoudExpectedCorrectUserWithAccount() throws Exception {
+        UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get("/users/1");
+                .get("/users/" + userId);
 
         var fakeServiceResponse = """
                 {
-                	"id": 1,
+                	"id": ":accountId",
                 	"name": "Alexandre Salvador de Oliveira",
                 	"email": "alexandre@email.com",
                 	"mobileNumber": "31911112222",
                 	"accounts": [
                 		{
-                			"id": 1,
+                			"id": ":userId",
                 			"accountNumber": "0001110001",
                 			"accountType": "PF"
                 		}
                 	]
                 }
-                """;
+                """
+                .replaceAll(":accountId", accountId.toString())
+                .replaceAll(":userId", userId.toString());
 
         var fakeData = new ObjectMapper().readValue(fakeServiceResponse, UserDTO.class);
 
-        Mockito.doReturn(fakeData).when(mockUserService).find(1L);
+        Mockito.doReturn(fakeData).when(mockUserService).find(Mockito.any(UUID.class));
 
         mockMvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.accounts").isArray());
     }
 

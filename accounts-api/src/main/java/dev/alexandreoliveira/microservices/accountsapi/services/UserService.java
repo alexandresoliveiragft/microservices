@@ -4,11 +4,13 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.Us
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Transactional(readOnly = true)
 public interface UserService {
 
     @Transactional(rollbackFor = {Throwable.class})
     UserDTO createUser(UserControllerCreateRequest request);
 
-    UserDTO find(Long id);
+    UserDTO find(UUID id);
 }

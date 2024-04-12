@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
@@ -49,7 +50,7 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         UserEntity savedUser = userRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
-        Assertions.assertThat(savedUser.getId()).isPositive();
+        Assertions.assertThat(savedUser.getId()).isNotNull();
         Assertions.assertThat(savedUser.getVersion()).isNotNull();
         Assertions.assertThat(savedUser.getCreatedAt()).isNotNull();
         Assertions.assertThat(savedUser.getCreatedBy()).isNotBlank();
@@ -113,7 +114,7 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
 
         UserEntity savedUser = userRepository.save(fakeUser);
 
-        Assertions.assertThat(savedUser.getId()).isPositive();
+        Assertions.assertThat(savedUser.getId()).isNotNull();
 
         Optional<UserEntity> optionalUserFoundWithEmail = userRepository
                 .findByEmailIgnoreCaseOrMobileNumber(fakeUser.getEmail(), "13");
@@ -143,13 +144,13 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
 
         UserEntity savedUser = userRepository.save(fakeUser);
 
-        Assertions.assertThat(savedUser.getId()).isPositive();
+        Assertions.assertThat(savedUser.getId()).isNotNull();
 
         Optional<UserEntity> optionalUserFound = userRepository.findById(savedUser.getId());
 
         Assertions.assertThat(optionalUserFound.isPresent()).isTrue();
 
-        Optional<UserEntity> optionalUserNotFound = userRepository.findById(-1L);
+        Optional<UserEntity> optionalUserNotFound = userRepository.findById(UUID.randomUUID());
 
         Assertions.assertThat(optionalUserNotFound.isPresent()).isFalse();
     }

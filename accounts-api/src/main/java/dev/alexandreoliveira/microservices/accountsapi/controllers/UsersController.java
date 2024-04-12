@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @Tag(
         name = "Bank - Accounts Api - UserController",
@@ -61,7 +62,7 @@ public class UsersController {
             description = "Details for created user and accounts if exists."
     )
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ResponseDTO<UserDTO>> show(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseDTO<UserDTO>> show(@PathVariable("id") UUID id) {
         UserDTO dto = userService.find(id);
         return ResponseEntity.ok(new ResponseDTO<>(dto, HttpStatus.OK.value()));
     }

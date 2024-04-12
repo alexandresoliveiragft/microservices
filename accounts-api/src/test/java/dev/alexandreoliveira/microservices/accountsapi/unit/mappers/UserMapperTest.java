@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.UUID;
 
 class UserMapperTest {
 
@@ -51,19 +52,19 @@ class UserMapperTest {
     @Order(4)
     void shouldExpectedToEntityMethodReturnDtoWhenDtoDataIsCorrect() {
         var accountDto = new AccountDTO();
-        accountDto.setId(1L);
+        accountDto.setId(UUID.randomUUID());
         accountDto.setAccountNumber("0001000200034");
         accountDto.setAccountType(AccountTypeEnum.PF.name());
-        accountDto.setUserId(1L);
+        accountDto.setUserId(UUID.randomUUID());
         var dto = new UserDTO();
-        dto.setId(1L);
+        dto.setId(UUID.randomUUID());
         dto.setName("Fake");
         dto.setEmail("fake@email.com");
         dto.setMobileNumber("+5531911112222");
         dto.setAccounts(List.of(accountDto));
         UserEntity entity = userMapper.toEntity(dto);
         Assertions.assertThat(entity).isNotNull();
-        Assertions.assertThat(entity.getId()).isPositive();
+        Assertions.assertThat(entity.getId()).isNotNull();
         Assertions.assertThat(entity.getName()).isNotBlank();
         Assertions.assertThat(entity.getEmail()).isNotBlank();
         Assertions.assertThat(entity.getMobileNumber()).isNotBlank();

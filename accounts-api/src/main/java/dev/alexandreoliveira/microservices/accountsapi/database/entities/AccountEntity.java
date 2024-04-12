@@ -32,7 +32,7 @@ public class AccountEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AccountTypeEnum accountType;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, targetEntity = UserEntity.class)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
