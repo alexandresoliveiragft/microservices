@@ -1,6 +1,6 @@
 package dev.alexandreoliveira.microservices.accountsapi.controllers;
 
-import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +27,7 @@ public class BaseController {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDTO<?>> handle(MethodArgumentNotValidException e) {
+    public ResponseEntity<ResponseDto<?>> handle(MethodArgumentNotValidException e) {
         List<String> errors = e.getFieldErrors()
                 .stream()
                 .map(f ->
@@ -36,8 +36,7 @@ public class BaseController {
                 .toList();
         return ResponseEntity
                 .status(HttpStatus.NOT_ACCEPTABLE)
-                .body(new ResponseDTO<>(
-                        HttpStatus.NOT_ACCEPTABLE.value(),
+                .body(new ResponseDto<>(
                         e.getClass().getName(),
                         errors));
     }
@@ -52,12 +51,11 @@ public class BaseController {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<ResponseDTO<?>> handle(ServiceException e) {
+    public ResponseEntity<ResponseDto<?>> handle(ServiceException e) {
         List<String> errors = List.of(e.getMessage());
         return ResponseEntity
                 .badRequest()
-                .body(new ResponseDTO<>(
-                        HttpStatus.BAD_REQUEST.value(),
+                .body(new ResponseDto<>(
                         e.getClass().getName(),
                         errors));
     }

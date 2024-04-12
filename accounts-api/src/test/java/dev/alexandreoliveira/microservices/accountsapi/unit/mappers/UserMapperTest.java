@@ -3,8 +3,8 @@ package dev.alexandreoliveira.microservices.accountsapi.unit.mappers;
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Order;
@@ -22,7 +22,7 @@ class UserMapperTest {
     @Order(1)
     void shouldExpectedToDtoMethodReturnNullWhenRequestDataIsInvalid() {
         UserControllerCreateRequest request = null;
-        UserDTO dto = userMapper.toDto(request);
+        UserDto dto = userMapper.toDto(request);
         Assertions.assertThat(dto).isNull();
     }
 
@@ -34,7 +34,7 @@ class UserMapperTest {
                 "fake@email.com",
                 "+5531911112222"
         );
-        UserDTO dto = userMapper.toDto(request);
+        UserDto dto = userMapper.toDto(request);
         Assertions.assertThat(dto).isNotNull();
         Assertions.assertThat(dto.getName()).isNotBlank();
         Assertions.assertThat(dto.getEmail()).isNotBlank();
@@ -44,19 +44,20 @@ class UserMapperTest {
     @Test
     @Order(3)
     void shouldExpectedToEntityMethodReturnNullWhenDtoDataIsInvalid() {
-        UserEntity entity = userMapper.toEntity(null);
+        UserDto userDto = null;
+        UserEntity entity = userMapper.toEntity(userDto);
         Assertions.assertThat(entity).isNull();
     }
 
     @Test
     @Order(4)
     void shouldExpectedToEntityMethodReturnDtoWhenDtoDataIsCorrect() {
-        var accountDto = new AccountDTO();
+        var accountDto = new AccountDto();
         accountDto.setId(UUID.randomUUID());
         accountDto.setAccountNumber("0001000200034");
         accountDto.setAccountType(AccountTypeEnum.PF.name());
         accountDto.setUserId(UUID.randomUUID());
-        var dto = new UserDTO();
+        var dto = new UserDto();
         dto.setId(UUID.randomUUID());
         dto.setName("Fake");
         dto.setEmail("fake@email.com");

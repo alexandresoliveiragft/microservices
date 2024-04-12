@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AccountDTO extends BaseDTO {
+public class AccountDto extends BaseDto {
 
     @NotNull
     private UUID userId;

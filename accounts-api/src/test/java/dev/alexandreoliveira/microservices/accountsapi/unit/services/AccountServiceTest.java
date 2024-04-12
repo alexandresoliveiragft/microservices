@@ -6,7 +6,7 @@ import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEnt
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountServiceImpl;
@@ -122,7 +122,7 @@ class AccountServiceTest extends UnitTest {
                 AccountTypeEnum.PF.name()
         );
 
-        AccountDTO account = sut.createAccount(fakeAccount);
+        AccountDto account = sut.createAccount(fakeAccount);
 
         org.assertj.core.api.Assertions.assertThat(account).isNotNull();
         org.assertj.core.api.Assertions.assertThat(account.getAccountNumber()).isEqualTo("0101101001");

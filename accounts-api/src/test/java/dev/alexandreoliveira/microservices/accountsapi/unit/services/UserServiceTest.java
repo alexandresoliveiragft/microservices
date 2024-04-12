@@ -5,7 +5,8 @@ import dev.alexandreoliveira.microservices.accountsapi.database.entities.Account
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
+import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserServiceImpl;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
@@ -29,6 +30,9 @@ class UserServiceTest extends UnitTest {
 
     @Mock
     UserRepository mockUserRepository;
+
+    @Mock
+    StringHelper stringHelper;
 
     AutoCloseable autoCloseable;
 
@@ -67,9 +71,13 @@ class UserServiceTest extends UnitTest {
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
+        Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
+                .thenCallRealMethod();
+
         var sut = new UserServiceImpl(
                 mockUserRepository,
-                userMapper
+                userMapper,
+                stringHelper
         );
 
         var fakeData = new UserControllerCreateRequest(
@@ -78,7 +86,7 @@ class UserServiceTest extends UnitTest {
                 "31911112222"
         );
 
-        UserDTO savedUser = sut.createUser(fakeData);
+        UserDto savedUser = sut.createUser(fakeData);
 
         Assertions.assertThat(savedUser.getId()).isNotNull();
     }
@@ -103,12 +111,16 @@ class UserServiceTest extends UnitTest {
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
+        Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
+                .thenCallRealMethod();
+
         var sut = new UserServiceImpl(
                 mockUserRepository,
-                userMapper
+                userMapper,
+                stringHelper
         );
 
-        UserDTO userDTO = sut.find(uuid);
+        UserDto userDTO = sut.find(uuid);
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
     }
@@ -140,12 +152,16 @@ class UserServiceTest extends UnitTest {
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
+        Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
+                .thenCallRealMethod();
+
         var sut = new UserServiceImpl(
                 mockUserRepository,
-                userMapper
+                userMapper,
+                stringHelper
         );
 
-        UserDTO userDTO = sut.find(userId);
+        UserDto userDTO = sut.find(userId);
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
         Assertions.assertThat(userDTO.getAccounts()).isNotEmpty();
@@ -163,9 +179,13 @@ class UserServiceTest extends UnitTest {
         Mockito.when(mockUserRepository.findByEmailIgnoreCaseOrMobileNumber(fakeUser.email(), fakeUser.mobileNumber()))
                 .thenReturn(Optional.of(new UserEntity()));
 
+        Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
+                .thenCallRealMethod();
+
         var sut = new UserServiceImpl(
                 mockUserRepository,
-                Mappers.getMapper(UserMapper.class)
+                Mappers.getMapper(UserMapper.class),
+                stringHelper
         );
 
         ServiceException serviceException = org.junit.jupiter.api.Assertions.assertThrows(

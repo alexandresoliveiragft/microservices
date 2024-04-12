@@ -1,14 +1,24 @@
 package dev.alexandreoliveira.microservices.accountsapi.services;
 
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerIndexRequest;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerUpdateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
+import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
+import dev.alexandreoliveira.microservices.accountsapi.helpers.ValidationHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -17,22 +27,62 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final StringHelper stringHelper;
 
     @Override
-    public UserDTO createUser(UserControllerCreateRequest request) {
+    public UserDto createUser(UserControllerCreateRequest request) {
         if (userRepository.findByEmailIgnoreCaseOrMobileNumber(request.email(), request.mobileNumber()).isPresent()) {
             throw new ServiceException("This email / mobileNumber exists");
         }
 
-        UserDTO dto = userMapper.toDto(request);
+        UserDto dto = userMapper.toDto(request);
         UserEntity userEntity = userMapper.toEntity(dto);
         UserEntity userSaved = userRepository.save(userEntity);
         return userMapper.toDto(userSaved);
     }
 
     @Override
-    public UserDTO find(UUID id) {
-        UserEntity userFound = userRepository.findById(id).orElseThrow(() -> new ServiceException("User not found"));
+    public UserDto find(UUID id) {
+        UserEntity userFound = userRepository
+                .findById(id)
+                .orElseThrow(() -> new ServiceException("User not found"));
         return userMapper.toDto(userFound);
+    }
+
+    @Override
+    public UserDto update(UserControllerUpdateRequest request) {
+        UserEntity entity = userRepository
+                .findById(request.id())
+                .orElseThrow(() -> new ServiceException("User not found"));
+        entity.setName(stringHelper.requiredNonBlankOrElse(request.name(), entity.getName()));
+        entity.setEmail(stringHelper.requiredNonBlankOrElse(request.email(), entity.getEmail()));
+        entity.setMobileNumber(stringHelper.requiredNonBlankOrElse(request.mobileNumber(), entity.getMobileNumber()));
+        userRepository.save(entity);
+        return userMapper.toDto(entity);
+    }
+
+    @Override
+    public Page<UserDto> index(UserControllerIndexRequest request, Pageable pageable) {
+        if (ValidationHelper.isAllNull(request)) {
+            throw new ServiceException("All parameters are null, please add some parameter to validate your search.");
+        }
+
+        ExampleMatcher exampleMatcher = ExampleMatcher
+                .matchingAll()
+                .withIgnoreNullValues()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnoreCase(true);
+
+        UserEntity exampleUserEntity = Objects.requireNonNullElse(
+                userMapper.toEntity(request),
+                new UserEntity());
+
+        Example<UserEntity> entityExample = Example.of(exampleUserEntity, exampleMatcher);
+
+        Specification<UserEntity> where = userRepository.where(request, entityExample);
+
+        Page<UserEntity> users = userRepository.findAll(where, pageable);
+
+        return users.map(userMapper::toDto);
     }
 }

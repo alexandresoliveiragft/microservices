@@ -5,7 +5,7 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
@@ -115,7 +115,7 @@ class AccountsControllerTest extends UnitTest {
         UUID accountId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        var fakeAccount = new AccountDTO();
+        var fakeAccount = new AccountDto();
         fakeAccount.setId(accountId);
         fakeAccount.setAccountType(AccountTypeEnum.PF.name());
         fakeAccount.setUserId(userId);

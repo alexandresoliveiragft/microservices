@@ -5,7 +5,7 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.UsersControll
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
@@ -90,7 +90,7 @@ class UsersControllerTest extends UnitTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestData);
 
-        var savedUser = new UserDTO();
+        var savedUser = new UserDto();
         savedUser.setId(UUID.randomUUID());
         savedUser.setName("Alexandre Salvador de Oliveira");
         savedUser.setEmail("alexandre@email.com");
@@ -135,7 +135,7 @@ class UsersControllerTest extends UnitTest {
                 .replaceAll(":accountId", accountId.toString())
                 .replaceAll(":userId", userId.toString());
 
-        var fakeData = new ObjectMapper().readValue(fakeServiceResponse, UserDTO.class);
+        var fakeData = new ObjectMapper().readValue(fakeServiceResponse, UserDto.class);
 
         Mockito.doReturn(fakeData).when(mockUserService).find(Mockito.any(UUID.class));
 

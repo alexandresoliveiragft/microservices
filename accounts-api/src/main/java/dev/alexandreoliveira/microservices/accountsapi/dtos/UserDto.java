@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserDTO extends BaseDTO {
+public class UserDto extends BaseDto {
 
     @NotNull
     @NotEmpty
@@ -29,5 +29,5 @@ public class UserDTO extends BaseDTO {
     @Size(min = 3, max = 100)
     private String mobileNumber;
 
-    private List<AccountDTO> accounts;
+    private List<AccountDto> accounts;
 }

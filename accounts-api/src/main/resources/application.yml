@@ -1,6 +1,8 @@
 server:
   port: 8080
 spring:
+  main:
+    banner-mode: off
   application:
     name: accounts-api
   profiles:
@@ -44,6 +46,3 @@ logging:
         orm:
           jdbc:
             bind: trace
-        type:
-          descriptor:
-            sql: trace

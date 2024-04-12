@@ -4,7 +4,7 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDTO;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import org.assertj.core.api.Assertions;
@@ -29,7 +29,7 @@ class AccountMapperTest {
     @Test
     @Order(1)
     void shouldExpectedToDTOMethodReturnNullWhenRequestDataIsInvalid() {
-        AccountDTO dto = accountMapper.toDTO(null);
+        AccountDto dto = accountMapper.toDTO(null);
         Assertions.assertThat(dto).isNull();
     }
 
@@ -40,7 +40,7 @@ class AccountMapperTest {
                 UUID.randomUUID(),
                 AccountTypeEnum.PF.name()
         );
-        AccountDTO dto = accountMapper.toDTO(request);
+        AccountDto dto = accountMapper.toDTO(request);
         Assertions.assertThat(dto).isNotNull();
         Assertions.assertThat(dto.getUserId()).isNotNull();
         Assertions.assertThat(dto.getAccountType()).isNotBlank();
@@ -56,7 +56,7 @@ class AccountMapperTest {
     @Test
     @Order(4)
     void shouldExpectedToEntityMethodReturnEntityWhenDtoDataIsCorrect() {
-        var dto = new AccountDTO();
+        var dto = new AccountDto();
         dto.setAccountType(AccountTypeEnum.PJ.name());
         dto.setUserId(UUID.randomUUID());
         dto.setId(UUID.randomUUID());
@@ -73,7 +73,7 @@ class AccountMapperTest {
     @Test
     @Order(5)
     void shouldExpectedToDtoMethodReturnNullWhenEntityDataIsInvalid() {
-        AccountDTO dto = accountMapper.toDto(null);
+        AccountDto dto = accountMapper.toDto(null);
         Assertions.assertThat(dto).isNull();
     }
 
@@ -88,7 +88,7 @@ class AccountMapperTest {
         account.setId(UUID.randomUUID());
         account.setAccountNumber("0010020034");
         ReflectionTestUtils.setField(accountMapper, "userMapper", userMapper);
-        AccountDTO dto = accountMapper.toDto(account);
+        AccountDto dto = accountMapper.toDto(account);
         Assertions.assertThat(dto).isNotNull();
         Assertions.assertThat(dto.getId()).isNotNull();
         Assertions.assertThat(dto.getAccountNumber()).isNotBlank();
