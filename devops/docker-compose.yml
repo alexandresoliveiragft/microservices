@@ -2,7 +2,7 @@ version: "3.8"
 
 x-aosoluti-microservices-database-common:
   &aosoluti-microservices-database-common
-  image: docker.io/bitnami/postgresql:16-alpine
+  image: docker.io/bitnami/postgresql:16
   networks:
     - aosoluti-microservices-network
   deploy:
@@ -69,7 +69,7 @@ services:
 #          memory: 256M
 #  kafdrop:
 #    image: obsidiandynamics/kafdrop:4.0.1
-#    container_name: aosoluti-microservices-kafka-helper
+#    container_name: aosoluti-microservices-kafka-ui
 #    environment:
 #      - KAFKA_BROKERCONNECT=kafka:9092
 #      - JVM_OPTS=-Xms192m -Xmx256m
