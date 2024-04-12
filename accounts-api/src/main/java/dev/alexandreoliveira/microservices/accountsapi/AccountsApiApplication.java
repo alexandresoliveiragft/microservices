@@ -11,6 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 @SpringBootApplication
 public class AccountsApiApplication {
@@ -26,18 +31,30 @@ public class AccountsApiApplication {
 			UserRepository userRepository = applicationContext.getBean(UserRepository.class);
 			AccountRepository accountRepository = applicationContext.getBean(AccountRepository.class);
 
-			var user = new UserEntity();
-			user.setName("Alexandre Salvador de Oliveira");
-			user.setEmail("alexandre@email.com");
-			user.setMobileNumber("31911112222");
+			ExampleMatcher exampleMatcher = ExampleMatcher
+					.matchingAll()
+					.withStringMatcher(ExampleMatcher.StringMatcher.EXACT)
+					.withIgnoreNullValues();
 
-			UserEntity savedUserEntity = userRepository.save(user);
+			UserEntity exampleUserEntity = new UserEntity();
+			exampleUserEntity.setEmail("alexandre@email.com");
 
-			var account = new AccountEntity();
-			account.setAccountType(AccountTypeEnum.PF);
-			account.setUser(savedUserEntity);
+			List<UserEntity> testBase = userRepository.findAll(Example.of(exampleUserEntity, exampleMatcher));
 
-			accountRepository.save(account);
+			if (CollectionUtils.isEmpty(testBase)) {
+				var user = new UserEntity();
+				user.setName("Alexandre Salvador de Oliveira");
+				user.setEmail("alexandre@email.com");
+				user.setMobileNumber("31911112222");
+
+				UserEntity savedUserEntity = userRepository.save(user);
+
+				var account = new AccountEntity();
+				account.setAccountType(AccountTypeEnum.PF);
+				account.setUser(savedUserEntity);
+
+				accountRepository.save(account);
+			}
 		};
 	}
 }
