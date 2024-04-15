@@ -39,11 +39,44 @@ services:
       - POSTGRESQL_MASTER_PORT_NUMBER=5432
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - 5436:5432
+      - 5433:5432
     volumes:
       - "./volumes/aosoluti-microservices-accounts-api-db/replica:/bitnami/postgresql"
     depends_on:
       - aosoluti-microservices-accounts-api-primary-db
+  aosoluti-microservices-cards-api-primary-db:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-cards-api-primary-db
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=dev_replica
+      - POSTGRESQL_REPLICATION_PASSWORD=dev
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_DATABASE=aosoluti-microservices-cards-api-db
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5434:5432
+    volumes:
+      - "./volumes/aosoluti-microservices-cards-api-db/primary:/bitnami/postgresql"
+  aosoluti-microservices-cards-api-replica-db:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-cards-api-replica-db
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=dev_replica
+      - POSTGRESQL_REPLICATION_PASSWORD=dev
+      - POSTGRESQL_MASTER_HOST=aosoluti-microservices-cards-api-primary-db
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5435:5432
+    volumes:
+      - "./volumes/aosoluti-microservices-cards-api-db/replica:/bitnami/postgresql"
+    depends_on:
+      - aosoluti-microservices-cards-api-primary-db
 #  kafka:
 #    image: docker.io/bitnami/kafka:3.6
 #    container_name: aosoluti-microservices-kafka
