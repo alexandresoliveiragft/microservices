@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.StringUtils;
 
+import java.io.Serializable;
 import java.util.Random;
 
 @Entity
@@ -23,7 +24,7 @@ import java.util.Random;
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AccountEntity extends BaseEntity {
+public class AccountEntity extends BaseEntity implements Serializable {
 
     @Column(name = "account_number", nullable = false, unique = true, length = 10)
     private String accountNumber;

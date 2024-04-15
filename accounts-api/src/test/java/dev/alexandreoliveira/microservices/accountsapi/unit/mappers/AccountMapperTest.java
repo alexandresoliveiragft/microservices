@@ -28,8 +28,9 @@ class AccountMapperTest {
 
     @Test
     @Order(1)
-    void shouldExpectedToDTOMethodReturnNullWhenRequestDataIsInvalid() {
-        AccountDto dto = accountMapper.toDTO(null);
+    void shouldExpectedToDtoMethodReturnNullWhenRequestDataIsInvalid() {
+        AccountControllerCreateRequest request = null;
+        AccountDto dto = accountMapper.toDto(request);
         Assertions.assertThat(dto).isNull();
     }
 
@@ -40,7 +41,7 @@ class AccountMapperTest {
                 UUID.randomUUID(),
                 AccountTypeEnum.PF.name()
         );
-        AccountDto dto = accountMapper.toDTO(request);
+        AccountDto dto = accountMapper.toDto(request);
         Assertions.assertThat(dto).isNotNull();
         Assertions.assertThat(dto.getUserId()).isNotNull();
         Assertions.assertThat(dto.getAccountType()).isNotBlank();
@@ -73,7 +74,8 @@ class AccountMapperTest {
     @Test
     @Order(5)
     void shouldExpectedToDtoMethodReturnNullWhenEntityDataIsInvalid() {
-        AccountDto dto = accountMapper.toDto(null);
+        AccountEntity entity = null;
+        AccountDto dto = accountMapper.toDto(entity);
         Assertions.assertThat(dto).isNull();
     }
 

@@ -9,7 +9,7 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Use
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
-import dev.alexandreoliveira.microservices.accountsapi.services.AccountServiceImpl;
+import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.AfterEach;
@@ -58,7 +58,7 @@ class AccountServiceTest extends UnitTest {
 
         AccountMapper accountMapper = Mappers.getMapper(AccountMapper.class);
 
-        var sut = new AccountServiceImpl(
+        var sut = new AccountService(
                 mockUserRepository,
                 mockAccountRepository,
                 accountMapper
@@ -71,7 +71,7 @@ class AccountServiceTest extends UnitTest {
 
         ServiceException serviceException = Assertions.assertThrows(
                 ServiceException.class,
-                () -> sut.createAccount(fakeAccount),
+                () -> sut.create(fakeAccount),
                 "Expected an error occurs here!"
         );
 
@@ -111,7 +111,7 @@ class AccountServiceTest extends UnitTest {
 
         ReflectionTestUtils.setField(accountMapper, "userMapper", userMapper);
 
-        var sut = new AccountServiceImpl(
+        var sut = new AccountService(
                 mockUserRepository,
                 mockAccountRepository,
                 accountMapper
@@ -122,7 +122,7 @@ class AccountServiceTest extends UnitTest {
                 AccountTypeEnum.PF.name()
         );
 
-        AccountDto account = sut.createAccount(fakeAccount);
+        AccountDto account = sut.create(fakeAccount);
 
         org.assertj.core.api.Assertions.assertThat(account).isNotNull();
         org.assertj.core.api.Assertions.assertThat(account.getAccountNumber()).isEqualTo("0101101001");

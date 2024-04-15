@@ -10,9 +10,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,11 +47,18 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID>, JpaSpec
                 predicates.add(updatedAtEnd);
             }
 
+            if (!CollectionUtils.isEmpty(request.accountsNumber())) {
+                for (String account : request.accountsNumber()) {
+                    Predicate like = criteriaBuilder.like(root.join("accounts").get("accountNumber"), "%" + account + "%");
+                    predicates.add(like);
+                }
+            }
+
             if (!ValidationHelper.isAllNull(example.getProbe())) {
                 predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, criteriaBuilder, example));
             }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         };
     }
 }

@@ -5,7 +5,9 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.UsersControll
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
@@ -42,6 +44,12 @@ class UsersControllerTest extends UnitTest {
 
     @MockBean
     AccountRepository mockAccountRepository;
+
+    @MockBean
+    UserDtoRepresentationModelAssembler userAssembler;
+
+    @MockBean
+    AccountDtoRepresentationModelAssembler accountAssembler;
 
     @BeforeEach
     void beforeEach() {
@@ -99,7 +107,8 @@ class UsersControllerTest extends UnitTest {
         UserControllerCreateRequest requestDto = new ObjectMapper()
                 .readValue(requestData, UserControllerCreateRequest.class);
 
-        Mockito.doReturn(savedUser).when(mockUserService).createUser(requestDto);
+        Mockito.doReturn(savedUser).when(mockUserService).create(requestDto);
+        Mockito.when(userAssembler.toModel(Mockito.any(UserDto.class))).thenCallRealMethod();
 
         mockMvc
                 .perform(request)
@@ -137,7 +146,8 @@ class UsersControllerTest extends UnitTest {
 
         var fakeData = new ObjectMapper().readValue(fakeServiceResponse, UserDto.class);
 
-        Mockito.doReturn(fakeData).when(mockUserService).find(Mockito.any(UUID.class));
+        Mockito.doReturn(fakeData).when(mockUserService).show(Mockito.any(UUID.class));
+        Mockito.when(userAssembler.toModel(Mockito.any(UserDto.class))).thenCallRealMethod();
 
         mockMvc
                 .perform(request)
@@ -165,7 +175,7 @@ class UsersControllerTest extends UnitTest {
         UserControllerCreateRequest requestDto = new ObjectMapper()
                 .readValue(requestData, UserControllerCreateRequest.class);
 
-        Mockito.when(mockUserService.createUser(requestDto))
+        Mockito.when(mockUserService.create(requestDto))
                 .thenThrow(new ServiceException("This email / mobileNumber exists"));
 
         mockMvc

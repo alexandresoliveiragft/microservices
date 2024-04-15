@@ -12,28 +12,17 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "mobileNumber", target = "mobileNumber")
     UserDto toDto(UserControllerCreateRequest request);
 
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "mobileNumber", target = "mobileNumber")
     UserEntity toEntity(UserDto dto);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "mobileNumber", target = "mobileNumber")
     UserDto toDto(UserEntity entity);
+
+    UserDto toDtoComplete(UserEntity entity);
 
     @Mapping(source = "userId", target = "id")
     @Named("toEntityByAccount")
     UserEntity toEntityByAccount(AccountDto dto);
 
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "mobileNumber", target = "mobileNumber")
     UserEntity toEntity(UserControllerIndexRequest request);
 }
