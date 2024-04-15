@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserEntity  extends BaseEntity {
+public class UserEntity  extends BaseEntity implements Serializable {
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;

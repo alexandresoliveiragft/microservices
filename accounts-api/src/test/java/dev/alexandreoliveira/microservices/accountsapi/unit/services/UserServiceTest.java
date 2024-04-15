@@ -8,7 +8,7 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Use
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
-import dev.alexandreoliveira.microservices.accountsapi.services.UserServiceImpl;
+import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.assertj.core.api.Assertions;
@@ -74,7 +74,7 @@ class UserServiceTest extends UnitTest {
         Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
                 .thenCallRealMethod();
 
-        var sut = new UserServiceImpl(
+        var sut = new UserService(
                 mockUserRepository,
                 userMapper,
                 stringHelper
@@ -86,7 +86,7 @@ class UserServiceTest extends UnitTest {
                 "31911112222"
         );
 
-        UserDto savedUser = sut.createUser(fakeData);
+        UserDto savedUser = sut.create(fakeData);
 
         Assertions.assertThat(savedUser.getId()).isNotNull();
     }
@@ -114,13 +114,13 @@ class UserServiceTest extends UnitTest {
         Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
                 .thenCallRealMethod();
 
-        var sut = new UserServiceImpl(
+        var sut = new UserService(
                 mockUserRepository,
                 userMapper,
                 stringHelper
         );
 
-        UserDto userDTO = sut.find(uuid);
+        UserDto userDTO = sut.show(uuid);
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
     }
@@ -155,13 +155,13 @@ class UserServiceTest extends UnitTest {
         Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
                 .thenCallRealMethod();
 
-        var sut = new UserServiceImpl(
+        var sut = new UserService(
                 mockUserRepository,
                 userMapper,
                 stringHelper
         );
 
-        UserDto userDTO = sut.find(userId);
+        UserDto userDTO = sut.show(userId);
 
         Assertions.assertThat(userDTO.getEmail()).isNotBlank();
         Assertions.assertThat(userDTO.getAccounts()).isNotEmpty();
@@ -182,7 +182,7 @@ class UserServiceTest extends UnitTest {
         Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
                 .thenCallRealMethod();
 
-        var sut = new UserServiceImpl(
+        var sut = new UserService(
                 mockUserRepository,
                 Mappers.getMapper(UserMapper.class),
                 stringHelper
@@ -190,7 +190,7 @@ class UserServiceTest extends UnitTest {
 
         ServiceException serviceException = org.junit.jupiter.api.Assertions.assertThrows(
                 ServiceException.class,
-                () -> sut.createUser(fakeUser),
+                () -> sut.create(fakeUser),
                 "Expected a error occur here");
 
         Assertions.assertThat(serviceException).isNotNull();

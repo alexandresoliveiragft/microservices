@@ -6,6 +6,7 @@ import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.A
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
+import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
 import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
@@ -43,6 +44,9 @@ class AccountsControllerTest extends UnitTest {
 
     @MockBean
     AccountRepository mockAccountRepository;
+
+    @MockBean
+    AccountDtoRepresentationModelAssembler assembler;
 
     @BeforeEach
     void beforeEach() {
@@ -100,7 +104,7 @@ class AccountsControllerTest extends UnitTest {
                 AccountTypeEnum.PF.name()
         );
 
-        Mockito.doThrow(new ServiceException("User not found")).when(mockAccountService).createAccount(fakeAccount);
+        Mockito.doThrow(new ServiceException("User not found")).when(mockAccountService).create(fakeAccount);
 
         mockMvc
                 .perform(request)
@@ -126,7 +130,8 @@ class AccountsControllerTest extends UnitTest {
                 AccountTypeEnum.PF.name()
         );
 
-        Mockito.doReturn(fakeAccount).when(mockAccountService).createAccount(expectedData);
+        Mockito.doReturn(fakeAccount).when(mockAccountService).create(expectedData);
+        Mockito.when(assembler.toModel(Mockito.any(AccountDto.class))).thenCallRealMethod();
 
         var requestData = """
                 {
@@ -147,6 +152,7 @@ class AccountsControllerTest extends UnitTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("location"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.userId", Matchers.equalTo(userId.toString())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accountNumber", Matchers.is(Matchers.not(Matchers.emptyString()))));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accountNumber", Matchers.is(Matchers.not(Matchers.emptyString()))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.links", Matchers.is(Matchers.not(Matchers.empty()))));
     }
 }

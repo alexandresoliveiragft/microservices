@@ -1,6 +1,6 @@
 package dev.alexandreoliveira.microservices.accountsapi.dtos;
 
-import dev.alexandreoliveira.microservices.accountsapi.controllers.UsersController;
+import dev.alexandreoliveira.microservices.accountsapi.controllers.AccountsController;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -11,11 +11,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class UserDtoRepresentationModelAssembler implements RepresentationModelAssembler<UserDto, EntityModel<UserDto>> {
+public class AccountDtoRepresentationModelAssembler implements RepresentationModelAssembler<AccountDto, EntityModel<AccountDto>> {
+
     @Override
-    public EntityModel<UserDto> toModel(UserDto entity) {
+    public EntityModel<AccountDto> toModel(AccountDto entity) {
         var links = new Link[] {
-                linkTo(methodOn(UsersController.class).show(entity.getId())).withSelfRel(),
+                linkTo(methodOn(AccountsController.class).show(entity.getId())).withSelfRel(),
         };
 
         return EntityModel.of(
@@ -25,7 +26,7 @@ public class UserDtoRepresentationModelAssembler implements RepresentationModelA
     }
 
     @Override
-    public CollectionModel<EntityModel<UserDto>> toCollectionModel(Iterable<? extends UserDto> entities) {
+    public CollectionModel<EntityModel<AccountDto>> toCollectionModel(Iterable<? extends AccountDto> entities) {
         return RepresentationModelAssembler.super.toCollectionModel(entities);
     }
 }

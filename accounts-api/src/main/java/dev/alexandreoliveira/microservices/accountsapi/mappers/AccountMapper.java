@@ -15,7 +15,7 @@ public interface AccountMapper {
 
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "accountType", target = "accountType")
-    AccountDto toDTO(AccountControllerCreateRequest request);
+    AccountDto toDto(AccountControllerCreateRequest request);
 
     @Mapping(source = "accountType", target = "accountType", qualifiedByName = "toTransformAccountType")
     @Mapping(source = "dto", target = "user", qualifiedByName = "toEntityByAccount")

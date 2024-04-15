@@ -56,7 +56,7 @@ class ArchTest {
                 .that()
                 .areAnnotatedWith(Service.class)
                 .should()
-                .haveSimpleNameEndingWith("ServiceImpl")
+                .haveSimpleNameEndingWith("Service")
                 .andShould()
                 .accessClassesThat()
                 .resideInAnyPackage("..services..", "..repositories..", "..mappers..");

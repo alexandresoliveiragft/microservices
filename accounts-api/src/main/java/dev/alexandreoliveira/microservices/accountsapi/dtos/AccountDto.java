@@ -6,11 +6,12 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AccountDto extends BaseDto {
+public class AccountDto extends BaseDto implements Serializable {
 
     @NotNull
     private UUID userId;
