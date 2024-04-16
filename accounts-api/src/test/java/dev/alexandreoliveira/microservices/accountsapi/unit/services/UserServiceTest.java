@@ -4,7 +4,7 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.Us
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
@@ -29,7 +29,7 @@ import java.util.UUID;
 class UserServiceTest extends UnitTest {
 
     @Mock
-    UserRepository mockUserRepository;
+    UsersRepository mockUsersRepository;
 
     @Mock
     StringHelper stringHelper;
@@ -43,8 +43,8 @@ class UserServiceTest extends UnitTest {
 
     @AfterEach
     void afterEach() throws Exception {
-        Mockito.clearInvocations(mockUserRepository);
-        Mockito.reset(mockUserRepository);
+        Mockito.clearInvocations(mockUsersRepository);
+        Mockito.reset(mockUsersRepository);
         autoCloseable.close();
     }
 
@@ -67,7 +67,7 @@ class UserServiceTest extends UnitTest {
         toSaveEntity.setEmail("fake@email.com");
         toSaveEntity.setMobileNumber("31911112222");
 
-        Mockito.when(mockUserRepository.save(toSaveEntity)).thenReturn(fakeUser);
+        Mockito.when(mockUsersRepository.save(toSaveEntity)).thenReturn(fakeUser);
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -75,7 +75,7 @@ class UserServiceTest extends UnitTest {
                 .thenCallRealMethod();
 
         var sut = new UserService(
-                mockUserRepository,
+                mockUsersRepository,
                 userMapper,
                 stringHelper
         );
@@ -107,7 +107,7 @@ class UserServiceTest extends UnitTest {
         fakeUser.setUpdatedBy("test");
         fakeUser.setVersion(LocalDateTime.now());
 
-        Mockito.when(mockUserRepository.findById(uuid)).thenReturn(Optional.of(fakeUser));
+        Mockito.when(mockUsersRepository.findById(uuid)).thenReturn(Optional.of(fakeUser));
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -115,7 +115,7 @@ class UserServiceTest extends UnitTest {
                 .thenCallRealMethod();
 
         var sut = new UserService(
-                mockUserRepository,
+                mockUsersRepository,
                 userMapper,
                 stringHelper
         );
@@ -148,7 +148,7 @@ class UserServiceTest extends UnitTest {
         fakeUser.setUpdatedBy("test");
         fakeUser.setVersion(LocalDateTime.now());
 
-        Mockito.when(mockUserRepository.findById(userId)).thenReturn(Optional.of(fakeUser));
+        Mockito.when(mockUsersRepository.findById(userId)).thenReturn(Optional.of(fakeUser));
 
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
@@ -156,7 +156,7 @@ class UserServiceTest extends UnitTest {
                 .thenCallRealMethod();
 
         var sut = new UserService(
-                mockUserRepository,
+                mockUsersRepository,
                 userMapper,
                 stringHelper
         );
@@ -176,14 +176,14 @@ class UserServiceTest extends UnitTest {
                 "31911112222"
         );
 
-        Mockito.when(mockUserRepository.findByEmailIgnoreCaseOrMobileNumber(fakeUser.email(), fakeUser.mobileNumber()))
+        Mockito.when(mockUsersRepository.findByEmailIgnoreCaseOrMobileNumber(fakeUser.email(), fakeUser.mobileNumber()))
                 .thenReturn(Optional.of(new UserEntity()));
 
         Mockito.when(stringHelper.requiredNonBlankOrElse(Mockito.anyString(), Mockito.anyString()))
                 .thenCallRealMethod();
 
         var sut = new UserService(
-                mockUserRepository,
+                mockUsersRepository,
                 Mappers.getMapper(UserMapper.class),
                 stringHelper
         );

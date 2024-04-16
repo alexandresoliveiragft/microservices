@@ -4,8 +4,8 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountsRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
@@ -30,10 +30,10 @@ import java.util.UUID;
 class AccountServiceTest extends UnitTest {
 
     @Mock
-    AccountRepository mockAccountRepository;
+    AccountsRepository mockAccountsRepository;
 
     @Mock
-    UserRepository mockUserRepository;
+    UsersRepository mockUsersRepository;
 
     AutoCloseable autoCloseable;
 
@@ -44,8 +44,8 @@ class AccountServiceTest extends UnitTest {
 
     @AfterEach
     void afterEach() throws Exception {
-        Mockito.clearInvocations(mockAccountRepository, mockUserRepository);
-        Mockito.reset(mockAccountRepository, mockUserRepository);
+        Mockito.clearInvocations(mockAccountsRepository, mockUsersRepository);
+        Mockito.reset(mockAccountsRepository, mockUsersRepository);
         autoCloseable.close();
     }
 
@@ -54,13 +54,13 @@ class AccountServiceTest extends UnitTest {
     void shouldExpectedExceptionWhenUserNotFound() {
         UUID userId = UUID.randomUUID();
 
-        Mockito.doReturn(Optional.empty()).when(mockUserRepository).findById(userId);
+        Mockito.doReturn(Optional.empty()).when(mockUsersRepository).findById(userId);
 
         AccountMapper accountMapper = Mappers.getMapper(AccountMapper.class);
 
         var sut = new AccountService(
-                mockUserRepository,
-                mockAccountRepository,
+                mockUsersRepository,
+                mockAccountsRepository,
                 accountMapper
         );
 
@@ -92,7 +92,7 @@ class AccountServiceTest extends UnitTest {
         fakeUser.setCreatedAt(LocalDateTime.now());
         fakeUser.setCreatedBy("test");
 
-        Mockito.doReturn(Optional.of(fakeUser)).when(mockUserRepository).findById(userId);
+        Mockito.doReturn(Optional.of(fakeUser)).when(mockUsersRepository).findById(userId);
 
         var expectedFakeAccount = new AccountEntity();
         expectedFakeAccount.setId(accountId);
@@ -104,7 +104,7 @@ class AccountServiceTest extends UnitTest {
         toSaveAccount.setAccountType(AccountTypeEnum.PF);
         toSaveAccount.setUser(fakeUser);
 
-        Mockito.doReturn(expectedFakeAccount).when(mockAccountRepository).save(toSaveAccount);
+        Mockito.doReturn(expectedFakeAccount).when(mockAccountsRepository).save(toSaveAccount);
 
         var accountMapper = Mappers.getMapper(AccountMapper.class);
         var userMapper = Mappers.getMapper(UserMapper.class);
@@ -112,8 +112,8 @@ class AccountServiceTest extends UnitTest {
         ReflectionTestUtils.setField(accountMapper, "userMapper", userMapper);
 
         var sut = new AccountService(
-                mockUserRepository,
-                mockAccountRepository,
+                mockUsersRepository,
+                mockAccountsRepository,
                 accountMapper
         );
 

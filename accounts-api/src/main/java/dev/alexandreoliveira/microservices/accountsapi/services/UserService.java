@@ -4,7 +4,7 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.Us
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerIndexRequest;
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.UserControllerUpdateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.ValidationHelper;
@@ -26,25 +26,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final UserMapper userMapper;
     private final StringHelper stringHelper;
 
     @Transactional(rollbackFor = {Throwable.class})
     public UserDto create(UserControllerCreateRequest request) {
-        if (userRepository.findByEmailIgnoreCaseOrMobileNumber(request.email(), request.mobileNumber()).isPresent()) {
+        if (usersRepository.findByEmailIgnoreCaseOrMobileNumber(request.email(), request.mobileNumber()).isPresent()) {
             throw new ServiceException("This email / mobileNumber exists");
         }
 
         UserDto dto = userMapper.toDto(request);
         UserEntity userEntity = userMapper.toEntity(dto);
-        UserEntity userSaved = userRepository.save(userEntity);
+        UserEntity userSaved = usersRepository.save(userEntity);
         return userMapper.toDto(userSaved);
     }
 
     @Transactional(readOnly = true)
     public UserDto show(UUID id) {
-        UserEntity userFound = userRepository
+        UserEntity userFound = usersRepository
                 .findById(id)
                 .orElseThrow(() -> new ServiceException("User not found"));
         return userMapper.toDto(userFound);
@@ -52,13 +52,13 @@ public class UserService {
 
     @Transactional(rollbackFor = {Throwable.class})
     public UserDto update(UserControllerUpdateRequest request) {
-        UserEntity entity = userRepository
+        UserEntity entity = usersRepository
                 .findById(request.id())
                 .orElseThrow(() -> new ServiceException("User not found"));
         entity.setName(stringHelper.requiredNonBlankOrElse(request.name(), entity.getName()));
         entity.setEmail(stringHelper.requiredNonBlankOrElse(request.email(), entity.getEmail()));
         entity.setMobileNumber(stringHelper.requiredNonBlankOrElse(request.mobileNumber(), entity.getMobileNumber()));
-        userRepository.save(entity);
+        usersRepository.save(entity);
         return userMapper.toDto(entity);
     }
 
@@ -80,9 +80,9 @@ public class UserService {
 
         Example<UserEntity> entityExample = Example.of(exampleUserEntity, exampleMatcher);
 
-        Specification<UserEntity> where = userRepository.where(request, entityExample);
+        Specification<UserEntity> where = usersRepository.where(request, entityExample);
 
-        Page<UserEntity> users = userRepository.findAll(where, pageable);
+        Page<UserEntity> users = usersRepository.findAll(where, pageable);
 
         return users.map(entity -> isComplete ? userMapper.toDtoComplete(entity) : userMapper.toDto(entity));
     }

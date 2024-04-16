@@ -1,7 +1,7 @@
 package dev.alexandreoliveira.microservices.accountsapi.integrated.controllers;
 
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.integrated.IntegratedTest;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
@@ -25,7 +25,7 @@ class AccountsControllerTest extends IntegratedTest {
     MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
+    UsersRepository usersRepository;
 
     @Test
     @Order(1)
@@ -79,7 +79,7 @@ class AccountsControllerTest extends IntegratedTest {
         user.setEmail("user@email.com");
         user.setMobileNumber("31911112222");
 
-        UserEntity savedUserEntity = userRepository.save(user);
+        UserEntity savedUserEntity = usersRepository.save(user);
 
         Assertions.assertThat(savedUserEntity).isNotNull();
         Assertions.assertThat(savedUserEntity.getId()).isNotNull();

@@ -19,10 +19,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, UUID>, JpaSpecificationExecutor<UserEntity> {
+public interface UsersRepository extends JpaRepository<UserEntity, UUID>, JpaSpecificationExecutor<UserEntity> {
 
     Optional<UserEntity> findByEmailIgnoreCaseOrMobileNumber(String email, String mobileNumber);
 
+    /**
+     * Where condition example:
+     * <code>
+     *     if (Objects.nonNull(request.createdAtStart())) {
+     *         Predicate createdAtStart = criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), request.createdAtStart());
+     *         predicates.add(createdAtStart);
+     *     }
+     * </code>
+     *
+     */
     default Specification<UserEntity> where(UserControllerIndexRequest request, Example<UserEntity> example) {
         return (root, query, criteriaBuilder) -> {
             final List<Predicate> predicates = new ArrayList<>();
@@ -54,11 +64,11 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID>, JpaSpec
                 }
             }
 
-            if (!ValidationHelper.isAllNull(example.getProbe())) {
+            if (ValidationHelper.isAllNull(example.getProbe())) {
                 predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, criteriaBuilder, example));
             }
 
-            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
 }

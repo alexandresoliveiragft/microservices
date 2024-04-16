@@ -1,7 +1,7 @@
 package dev.alexandreoliveira.microservices.accountsapi.integrated.database.repositories;
 
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.integrated.database.helpers.PostgreSQLHelperTest;
 import org.assertj.core.api.Assertions;
 import org.hibernate.exception.ConstraintViolationException;
@@ -26,17 +26,17 @@ import java.util.stream.Stream;
 
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
 
-class UserRepositoryTest extends PostgreSQLHelperTest {
+class UsersRepositoryTest extends PostgreSQLHelperTest {
 
     @Autowired
-    UserRepository userRepository;
+    UsersRepository usersRepository;
 
     @Autowired
     PlatformTransactionManager platformTransactionManager;
 
     @AfterEach
     void afterEach() {
-        userRepository.deleteAll();
+        usersRepository.deleteAll();
     }
 
     @Test
@@ -47,7 +47,7 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         user.setEmail("fake-user@email.com");
         user.setMobileNumber("+5531911112222");
 
-        UserEntity savedUser = userRepository.save(user);
+        UserEntity savedUser = usersRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
         Assertions.assertThat(savedUser.getId()).isNotNull();
@@ -68,12 +68,12 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         user.setEmail("fake-user@email.com");
         user.setMobileNumber("+5531911112222");
 
-        userRepository.save(user);
+        usersRepository.save(user);
 
         DataIntegrityViolationException exception = org.junit.jupiter.api.Assertions.assertThrows(
                 DataIntegrityViolationException.class,
                 () -> new TransactionTemplate(platformTransactionManager).execute(status ->
-                        userRepository.save(userError)
+                        usersRepository.save(userError)
                 ),
                 "Expected an exception"
         );
@@ -112,21 +112,21 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         fakeUser.setEmail("fake-user@email.com");
         fakeUser.setMobileNumber("+5531911112222");
 
-        UserEntity savedUser = userRepository.save(fakeUser);
+        UserEntity savedUser = usersRepository.save(fakeUser);
 
         Assertions.assertThat(savedUser.getId()).isNotNull();
 
-        Optional<UserEntity> optionalUserFoundWithEmail = userRepository
+        Optional<UserEntity> optionalUserFoundWithEmail = usersRepository
                 .findByEmailIgnoreCaseOrMobileNumber(fakeUser.getEmail(), "13");
 
         Assertions.assertThat(optionalUserFoundWithEmail.isPresent()).isTrue();
 
-        Optional<UserEntity> optionalUserFoundWithMobileNumber = userRepository
+        Optional<UserEntity> optionalUserFoundWithMobileNumber = usersRepository
                 .findByEmailIgnoreCaseOrMobileNumber("user@email.com", fakeUser.getMobileNumber());
 
         Assertions.assertThat(optionalUserFoundWithMobileNumber.isPresent()).isTrue();
 
-        Optional<UserEntity> optionalUserFoundWithEmailToUpperCase = userRepository
+        Optional<UserEntity> optionalUserFoundWithEmailToUpperCase = usersRepository
                 .findByEmailIgnoreCaseOrMobileNumber(
                         fakeUser.getEmail().toLowerCase(Locale.ROOT),
                         "5");
@@ -142,15 +142,15 @@ class UserRepositoryTest extends PostgreSQLHelperTest {
         fakeUser.setEmail("fake-user@email.com");
         fakeUser.setMobileNumber("+5531911112222");
 
-        UserEntity savedUser = userRepository.save(fakeUser);
+        UserEntity savedUser = usersRepository.save(fakeUser);
 
         Assertions.assertThat(savedUser.getId()).isNotNull();
 
-        Optional<UserEntity> optionalUserFound = userRepository.findById(savedUser.getId());
+        Optional<UserEntity> optionalUserFound = usersRepository.findById(savedUser.getId());
 
         Assertions.assertThat(optionalUserFound.isPresent()).isTrue();
 
-        Optional<UserEntity> optionalUserNotFound = userRepository.findById(UUID.randomUUID());
+        Optional<UserEntity> optionalUserNotFound = usersRepository.findById(UUID.randomUUID());
 
         Assertions.assertThat(optionalUserNotFound.isPresent()).isFalse();
     }

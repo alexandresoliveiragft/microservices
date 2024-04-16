@@ -3,8 +3,8 @@ package dev.alexandreoliveira.microservices.accountsapi.integrated.controllers;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountsRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.integrated.IntegratedTest;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
@@ -30,10 +30,10 @@ class UsersControllerTest extends IntegratedTest {
     MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
+    UsersRepository usersRepository;
 
     @Autowired
-    AccountRepository accountRepository;
+    AccountsRepository accountsRepository;
 
     @Test
     @Order(1)
@@ -83,7 +83,7 @@ class UsersControllerTest extends IntegratedTest {
         user.setEmail("user@email.com");
         user.setMobileNumber("31911112222");
 
-        UserEntity savedUser = userRepository.save(user);
+        UserEntity savedUser = usersRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
         Assertions.assertThat(savedUser.getId()).isNotNull();
@@ -105,7 +105,7 @@ class UsersControllerTest extends IntegratedTest {
         user.setEmail("user@email.com");
         user.setMobileNumber("31911112222");
 
-        UserEntity savedUser = userRepository.save(user);
+        UserEntity savedUser = usersRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
         Assertions.assertThat(savedUser.getId()).isNotNull();
@@ -114,7 +114,7 @@ class UsersControllerTest extends IntegratedTest {
         account.setAccountType(AccountTypeEnum.PF);
         account.setUser(savedUser);
 
-        AccountEntity savedAccount = accountRepository.save(account);
+        AccountEntity savedAccount = accountsRepository.save(account);
 
         Assertions.assertThat(savedAccount).isNotNull();
         Assertions.assertThat(savedAccount.getId()).isNotNull();
@@ -142,7 +142,7 @@ class UsersControllerTest extends IntegratedTest {
         user.setEmail("alexandre@email.com");
         user.setMobileNumber("31933334444");
 
-        UserEntity savedUser = userRepository.save(user);
+        UserEntity savedUser = usersRepository.save(user);
 
         Assertions.assertThat(savedUser).isNotNull();
         Assertions.assertThat(savedUser.getId()).isNotNull();

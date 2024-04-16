@@ -3,8 +3,8 @@ package dev.alexandreoliveira.microservices.accountsapi.unit.controllers;
 import dev.alexandreoliveira.microservices.accountsapi.controllers.AccountsController;
 import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts.AccountControllerCreateRequest;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountsRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
@@ -40,18 +40,18 @@ class AccountsControllerTest extends UnitTest {
     AccountService mockAccountService;
 
     @MockBean
-    UserRepository mockUserRepository;
+    UsersRepository mockUsersRepository;
 
     @MockBean
-    AccountRepository mockAccountRepository;
+    AccountsRepository mockAccountsRepository;
 
     @MockBean
     AccountDtoRepresentationModelAssembler assembler;
 
     @BeforeEach
     void beforeEach() {
-        Mockito.clearInvocations(mockAccountService, mockUserRepository, mockAccountRepository);
-        Mockito.reset(mockAccountService, mockUserRepository, mockAccountRepository);
+        Mockito.clearInvocations(mockAccountService, mockUsersRepository, mockAccountsRepository);
+        Mockito.reset(mockAccountService, mockUsersRepository, mockAccountsRepository);
     }
 
     @ParameterizedTest

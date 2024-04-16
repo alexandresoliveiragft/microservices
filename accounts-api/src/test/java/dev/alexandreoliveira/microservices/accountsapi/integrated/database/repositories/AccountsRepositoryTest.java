@@ -3,8 +3,8 @@ package dev.alexandreoliveira.microservices.accountsapi.integrated.database.repo
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountRepository;
-import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UserRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountsRepository;
+import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.integrated.database.helpers.PostgreSQLHelperTest;
 import org.assertj.core.api.Assertions;
 import org.hibernate.exception.ConstraintViolationException;
@@ -24,21 +24,21 @@ import java.util.Optional;
 
 import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
 
-class AccountRepositoryTest extends PostgreSQLHelperTest {
+class AccountsRepositoryTest extends PostgreSQLHelperTest {
 
     @Autowired
-    AccountRepository accountRepository;
+    AccountsRepository accountsRepository;
 
     @Autowired
-    UserRepository userRepository;
+    UsersRepository usersRepository;
 
     @Autowired
     PlatformTransactionManager platformTransactionManager;
 
     @AfterEach
     void afterEach() {
-        accountRepository.deleteAll();
-        userRepository.deleteAll();
+        accountsRepository.deleteAll();
+        usersRepository.deleteAll();
     }
 
     @Test
@@ -50,7 +50,7 @@ class AccountRepositoryTest extends PostgreSQLHelperTest {
         fakeAccount.setAccountType(AccountTypeEnum.PF);
         fakeAccount.setUser(fakeUser);
 
-        AccountEntity savedAccount = accountRepository.save(fakeAccount);
+        AccountEntity savedAccount = accountsRepository.save(fakeAccount);
 
         Assertions.assertThat(savedAccount).isNotNull();
 
@@ -76,7 +76,7 @@ class AccountRepositoryTest extends PostgreSQLHelperTest {
         fakeAccount.setAccountNumber("0010010011");
         fakeAccount.setUser(fakeUser);
 
-        AccountEntity savedAccount = accountRepository.save(fakeAccount);
+        AccountEntity savedAccount = accountsRepository.save(fakeAccount);
 
         Assertions.assertThat(savedAccount.getId()).isNotNull();
 
@@ -88,7 +88,7 @@ class AccountRepositoryTest extends PostgreSQLHelperTest {
                     fakeAccountError.setAccountNumber("0010010011");
                     fakeAccountError.setUser(fakeUser);
 
-                    return accountRepository.save(fakeAccountError);
+                    return accountsRepository.save(fakeAccountError);
                 }),
                 "Expected an exception"
         );
@@ -107,7 +107,7 @@ class AccountRepositoryTest extends PostgreSQLHelperTest {
         user.setEmail("fake-user@email.com");
         user.setMobileNumber("+5531911112222");
 
-        return userRepository.save(user);
+        return usersRepository.save(user);
     }
 
     @TestConfiguration
