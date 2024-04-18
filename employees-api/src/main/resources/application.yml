@@ -7,4 +7,4 @@ spring:
     import: 'optional:configserver:http://dev:dev@localhost:8080'
   cloud:
     config:
-      label: dev
+      label: main
