@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: git
+  application:
+    name: config-api
+  cloud:
+    config:
+      server:
+        git:
+          defaultLabel: main
+          tryMasterBranch: false
+          timeout: 3
+          uri: https://github.com/alexandresoliveiragft/microservices
+          deleteUntrackedBranches: true
+          searchPaths:
+            - 'aodev-travels-config-app-files/{application}/{profile}'
+  security:
+    user:
+      name: dev
+      password: dev

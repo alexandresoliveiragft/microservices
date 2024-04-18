@@ -1,0 +1,62 @@
+server:
+  port: 8083
+
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: employees-api
+  profiles:
+    active: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5436/aosoluti-microservices-employees-api-db
+    username: dev
+    password: dev
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 2
+      idle-timeout: 10000
+      max-lifetime: 60000
+      connection-timeout: 5000
+      pool-name: EmployeesApiHikariPool
+  flyway:
+    url: jdbc:postgresql://localhost:5436/aosoluti-microservices-employees-api-db
+    user: dev
+    password: dev
+    encoding: UTF-8
+    baseline-on-migrate: true
+    clean-disabled: true
+    locations:
+      - "db/migrations/postgresql"
+    enabled: true
+  servlet:
+    multipart:
+      enabled: false
+  jackson:
+    default-property-inclusion: NON_NULL
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password: dev
+    timeout: 60000
+
+api:
+  clients:
+    account-api: http://localhost:8080
+  cache:
+    ttl:
+      employees-api-employee: 10
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace

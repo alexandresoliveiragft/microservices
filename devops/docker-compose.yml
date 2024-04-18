@@ -125,7 +125,39 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 64M
+  aosoluti-microservices-keycloak-database:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-keycloak-database
+    ports:
+      - 5430:5432
+    environment:
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_DATABASE=keycloak-db
+    volumes:
+      - './volumes/aosoluti-microservices-keycloak-database:/bitnami/postgresql'
+  aosoluti-microservices-keycloak:
+    image: docker.io/bitnami/keycloak:24
+    container_name: aosoluti-microservices-keycloak
+    environment:
+      - KEYCLOAK_DATABASE_PORT=5432
+      - KEYCLOAK_DATABASE_HOST=aosoluti-microservices-keycloak-database
+      - KEYCLOAK_DATABASE_USER=dev
+      - KEYCLOAK_DATABASE_NAME=keycloak-db
+      - KEYCLOAK_DATABASE_PASSWORD=dev
+      - KEYCLOAK_DATABASE_VENDOR=postgresql
+      - KEYCLOAK_ADMIN=dev-keycloak
+      - KEYCLOAK_ADMIN_PASSWORD=dev-keycloak
+      - KEYCLOAK_HTTP_PORT=8080
+    depends_on:
+      - aosoluti-microservices-keycloak-database
+    ports:
+      - 8079:8080
+    networks:
+      - aosoluti-microservices-network
+    volumes:
+      - './volumes/aosoluti-microservices-keycloak:/bitnami/keycloak'
 #  kafka:
 #    image: docker.io/bitnami/kafka:3.6
 #    container_name: aosoluti-microservices-kafka
