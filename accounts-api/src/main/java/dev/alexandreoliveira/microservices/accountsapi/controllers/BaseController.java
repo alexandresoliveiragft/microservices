@@ -1,7 +1,8 @@
 package dev.alexandreoliveira.microservices.accountsapi.controllers;
 
 import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDto;
-import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.MapperException;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,7 @@ import java.util.List;
 @RestControllerAdvice
 public class BaseController {
 
-    @Operation(
-            summary = "Error to validate request data."
-    )
+    @Operation(summary = "Error to validate request data.")
     @ApiResponse(
             responseCode = "406",
             description = "This error occurs when request data is invalid."
@@ -41,9 +40,7 @@ public class BaseController {
                         errors));
     }
 
-    @Operation(
-            summary = "Internal error."
-    )
+    @Operation(summary = "Business error.")
     @ApiResponse(
             responseCode = "400",
             description = "This error occurs when business logic isn't ok."
@@ -52,6 +49,23 @@ public class BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ResponseDto<?>> handle(ServiceException e) {
+        List<String> errors = List.of(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(new ResponseDto<>(
+                        e.getClass().getName(),
+                        errors));
+    }
+
+    @Operation(summary = "Business error.")
+    @ApiResponse(
+            responseCode = "400",
+            description = "This error occurs when business logic isn't ok."
+    )
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MapperException.class)
+    public ResponseEntity<ResponseDto<?>> handle(MapperException e) {
         List<String> errors = List.of(e.getMessage());
         return ResponseEntity
                 .badRequest()

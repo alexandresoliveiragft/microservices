@@ -10,7 +10,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
-import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

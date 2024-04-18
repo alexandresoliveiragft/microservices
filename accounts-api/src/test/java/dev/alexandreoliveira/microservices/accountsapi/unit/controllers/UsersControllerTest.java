@@ -9,7 +9,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresenta
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
-import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;

@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -132,5 +133,29 @@ public class UsersController {
     ) {
         UserDto user = userService.update(request);
         return ResponseEntity.ok(new ResponseDto<>(user));
+    }
+
+    @Operation(summary = "Verify user by identifier.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Check if user exists and active."
+    )
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "{id}/verify")
+    public ResponseEntity<Void> verify(@PathVariable("id") UUID id) {
+        userService.verify(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Delete user by identifier.")
+    @ApiResponse(
+            responseCode = "204",
+            description = "If user exists, desactivate then."
+    )
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

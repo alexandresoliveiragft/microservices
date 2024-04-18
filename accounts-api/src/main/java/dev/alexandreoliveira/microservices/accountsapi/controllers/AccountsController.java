@@ -15,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,5 +69,16 @@ public class AccountsController {
     ) {
         AccountDto account = accountService.show(id);
         return ResponseEntity.ok(assembler.toModel(account));
+    }
+
+    @Operation(summary = "Delete account by id")
+    @ApiResponse(
+            responseCode = "204",
+            description = "Delete account"
+    )
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
+        accountService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -4,13 +4,14 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.accounts
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.AccountEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.MapperException;
 import org.mapstruct.EnumMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class}, unexpectedValueMappingException = MapperException.class)
 public interface AccountMapper {
 
     @Mapping(source = "userId", target = "userId")

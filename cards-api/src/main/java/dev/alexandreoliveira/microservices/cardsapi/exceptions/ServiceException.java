@@ -1,4 +1,4 @@
-package dev.alexandreoliveira.microservices.accountsapi.services.exceptions;
+package dev.alexandreoliveira.microservices.cardsapi.exceptions;
 
 public class ServiceException extends RuntimeException {
 

@@ -37,6 +37,9 @@ public class AccountEntity extends BaseEntity implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @Column(name = "is_enabled", nullable = false)
+    private Boolean isEnabled;
+
     @PrePersist
     public void prePersist() {
         if (StringUtils.hasText(accountNumber)) {

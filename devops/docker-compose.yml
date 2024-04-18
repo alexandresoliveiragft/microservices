@@ -77,6 +77,55 @@ services:
       - "./volumes/aosoluti-microservices-cards-api-db/replica:/bitnami/postgresql"
     depends_on:
       - aosoluti-microservices-cards-api-primary-db
+  aosoluti-microservices-employees-api-primary-db:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-employees-api-primary-db
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=dev_replica
+      - POSTGRESQL_REPLICATION_PASSWORD=dev
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_DATABASE=aosoluti-microservices-employees-api-db
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5436:5432
+    volumes:
+      - "./volumes/aosoluti-microservices-employees-api-db/primary:/bitnami/postgresql"
+  aosoluti-microservices-employees-api-replica-db:
+    <<: *aosoluti-microservices-database-common
+    container_name: aosoluti-microservices-employees-api-replica-db
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=dev_replica
+      - POSTGRESQL_REPLICATION_PASSWORD=dev
+      - POSTGRESQL_MASTER_HOST=aosoluti-microservices-employees-api-primary-db
+      - POSTGRESQL_USERNAME=dev
+      - POSTGRESQL_PASSWORD=dev
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5437:5432
+    volumes:
+      - "./volumes/aosoluti-microservices-employees-api-db/replica:/bitnami/postgresql"
+    depends_on:
+      - aosoluti-microservices-employees-api-primary-db
+  aosoluti-microservices-cache:
+    image: docker.io/bitnami/redis:7.2
+    container_name: aosoluti-microservices-cache
+    environment:
+      - REDIS_PASSWORD=dev
+      - REDIS_MASTER_PASSWORD=dev
+    ports:
+      - 6379:6379
+    networks:
+      - aosoluti-microservices-network
+    volumes:
+      - "./volumes/aosoluti-microservices-cache:/bitnami/redis"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 #  kafka:
 #    image: docker.io/bitnami/kafka:3.6
 #    container_name: aosoluti-microservices-kafka

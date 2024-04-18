@@ -9,7 +9,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.ValidationHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
-import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -85,5 +85,26 @@ public class UserService {
         Page<UserEntity> users = usersRepository.findAll(where, pageable);
 
         return users.map(entity -> isComplete ? userMapper.toDtoComplete(entity) : userMapper.toDto(entity));
+    }
+
+    @Transactional(readOnly = true)
+    public void verify(UUID id) {
+        UserEntity user = usersRepository
+                .findById(id)
+                .orElseThrow(() -> new ServiceException("User not found"));
+
+        if (!user.getIsEnabled()) {
+            throw new ServiceException("User unavailable");
+        }
+    }
+
+    @Transactional(rollbackFor = {Throwable.class})
+    public void delete(UUID id) {
+        UserEntity user = usersRepository
+                .findById(id)
+                .orElseThrow(() -> new ServiceException("User not found"));
+        user.setIsEnabled(false);
+        user.getAccounts().forEach(account -> account.setIsEnabled(false));
+        usersRepository.save(user);
     }
 }

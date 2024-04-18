@@ -6,17 +6,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Random;
 import java.util.UUID;
 
 @Entity
@@ -45,14 +42,9 @@ public class CardEntity extends BaseEntity implements Serializable {
     @Column(name = "limit_value", nullable = false, precision = 20, scale = 2)
     private BigDecimal limitValue;
 
-    @PrePersist
-    public void prePersist() {
-        if (StringUtils.hasText(cardNumber)) {
-            return;
-        }
+    @Column(name = "due_day", nullable = false)
+    private Byte dueDay;
 
-        int randomAccountNumber = new Random().ints(1, Integer.MAX_VALUE).findFirst().getAsInt();
-
-        this.cardNumber = String.format("%" + 16 + "s", randomAccountNumber).replace(' ', '0');
-    }
+    @Column(name = "is_enabled", nullable = false)
+    private Boolean isEnabled;
 }

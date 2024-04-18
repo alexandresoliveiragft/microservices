@@ -7,7 +7,7 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Acc
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
-import dev.alexandreoliveira.microservices.accountsapi.services.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,5 +42,15 @@ public class AccountService {
                 .orElseThrow(() -> new ServiceException("Account not found"));
         account.getUser();
         return accountMapper.toDto(account);
+    }
+
+    @Transactional(rollbackFor = {Throwable.class})
+    public void delete(UUID id) {
+        AccountEntity account = accountsRepository
+                .findById(id)
+                .orElseThrow(() -> new ServiceException("Account not found"));
+
+        account.setIsEnabled(false);
+        accountsRepository.save(account);
     }
 }

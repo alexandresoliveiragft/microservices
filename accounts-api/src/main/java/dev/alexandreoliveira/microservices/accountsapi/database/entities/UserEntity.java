@@ -32,4 +32,7 @@ public class UserEntity  extends BaseEntity implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     private List<AccountEntity> accounts;
+
+    @Column(name = "is_enabled", nullable = false)
+    private Boolean isEnabled;
 }

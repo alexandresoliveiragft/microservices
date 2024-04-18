@@ -5,11 +5,12 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.Us
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.MapperException;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unexpectedValueMappingException = MapperException.class)
 public interface UserMapper {
 
     UserDto toDto(UserControllerCreateRequest request);
