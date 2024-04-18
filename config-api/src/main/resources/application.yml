@@ -16,7 +16,7 @@ spring:
           uri: https://github.com/alexandresoliveiragft/microservices
           deleteUntrackedBranches: true
           searchPaths:
-            - 'aodev-travels-config-app-files/{application}/{profile}'
+            - 'config-app-files/{application}/{profile}'
   security:
     user:
       name: dev
