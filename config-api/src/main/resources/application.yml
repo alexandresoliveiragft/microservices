@@ -16,7 +16,7 @@ spring:
           uri: https://github.com/alexandresoliveiragft/microservices
           deleteUntrackedBranches: true
           searchPaths:
-            - 'config-app-files/{application}/{profile}'
+            - 'config-api-files/{application}/{profile}'
   security:
     user:
       name: dev
