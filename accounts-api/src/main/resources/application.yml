@@ -10,3 +10,9 @@ spring:
   cloud:
     config:
       label: main
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

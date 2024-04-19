@@ -1,10 +1,6 @@
 spring:
-  main:
-    banner-mode: off
   application:
-    name: cards-api
-  profiles:
-    active: dev
+    name: discovery-api
   config:
     import: 'optional:configserver:http://dev:dev@localhost:8080'
   cloud:
@@ -16,3 +12,12 @@ management:
     web:
       exposure:
         include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
