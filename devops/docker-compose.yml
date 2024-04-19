@@ -150,6 +150,7 @@ services:
       - KEYCLOAK_ADMIN=dev-keycloak
       - KEYCLOAK_ADMIN_PASSWORD=dev-keycloak
       - KEYCLOAK_HTTP_PORT=8080
+      - KEYCLOAK_EXTRA_ARGS="-Dkeycloak.profile.feature.scripts=enabled"
     depends_on:
       - aosoluti-microservices-keycloak-database
     ports:
@@ -158,6 +159,10 @@ services:
       - aosoluti-microservices-network
     volumes:
       - './volumes/aosoluti-microservices-keycloak:/bitnami/keycloak'
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 #  kafka:
 #    image: docker.io/bitnami/kafka:3.6
 #    container_name: aosoluti-microservices-kafka
