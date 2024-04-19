@@ -1,6 +1,14 @@
 server:
   port: 8070
 
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: discovery-api
+  profiles:
+    active: dev
+
 eureka:
   instance:
     hostname: localhost

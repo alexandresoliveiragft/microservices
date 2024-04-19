@@ -1,6 +1,10 @@
 spring:
+  main:
+    banner-mode: off
   application:
     name: discovery-api
+  profiles:
+    active: dev
   config:
     import: 'optional:configserver:http://dev:dev@localhost:8080'
   cloud:
