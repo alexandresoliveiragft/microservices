@@ -1,0 +1,34 @@
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: gateway-api
+  profiles:
+    active: dev
+  config:
+    import: 'optional:configserver:http://dev:dev@localhost:8080'
+  cloud:
+    config:
+      label: main
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: "Bank - Gateway API"
+    description: "Gateway microservice for bank dashboard"
+    version: "0.0.1-SNAPSHOT"
