@@ -10,6 +10,9 @@ import java.util.UUID;
 @Schema
 public record CardsControllerCreateRequest(
         @NotNull UUID externalId,
+
         @NotEmpty
-        @Pattern(regexp = "CREDT|DEBIT|DBCRE") String cardType
+        @Pattern(regexp = "CREDT|DEBIT|DBCRE") String cardType,
+
+        @NotNull Byte dueDay
 ) {}

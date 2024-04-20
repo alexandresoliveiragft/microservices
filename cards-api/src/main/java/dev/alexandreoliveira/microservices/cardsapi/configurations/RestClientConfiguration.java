@@ -4,6 +4,7 @@ import dev.alexandreoliveira.microservices.cardsapi.apis.AccountApi;
 import dev.alexandreoliveira.microservices.cardsapi.properties.ClientsProperties;
 import dev.alexandreoliveira.microservices.cardsapi.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -35,7 +36,7 @@ public class RestClientConfiguration {
 
     @Bean
     @DependsOn("httpServiceProxyFactory")
-    public AccountApi accountApi(HttpServiceProxyFactory factory) {
+    public AccountApi accountApi(@Qualifier("httpServiceProxyFactory") HttpServiceProxyFactory factory) {
         return factory.createClient(AccountApi.class);
     }
 }

@@ -45,6 +45,7 @@ public class CardsService {
         cardEntity.setCardType(cardMapper.toTransformCardType(request.cardType()));
         cardEntity.setSecureCode(String.valueOf(randomSecureNumber));
         cardEntity.setLimitValue(new BigDecimal("999.99"));
+        cardEntity.setDueDay(request.dueDay());
 
         CardEntity savedCard = cardsRepository.save(cardEntity);
 

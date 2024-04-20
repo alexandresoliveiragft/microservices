@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -47,4 +49,11 @@ public class CardEntity extends BaseEntity implements Serializable {
 
     @Column(name = "is_enabled", nullable = false)
     private Boolean isEnabled;
+
+    @PrePersist
+    public void prePersist() {
+        if (Objects.isNull(this.isEnabled)) {
+            this.isEnabled = Boolean.TRUE;
+        }
+    }
 }
