@@ -64,7 +64,7 @@ public interface UsersRepository extends JpaRepository<UserEntity, UUID>, JpaSpe
                 }
             }
 
-            if (ValidationHelper.isAllNull(example.getProbe())) {
+            if (!ValidationHelper.isAllNull(example.getProbe())) {
                 predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, criteriaBuilder, example));
             }
 

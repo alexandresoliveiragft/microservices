@@ -35,9 +35,9 @@ public class UserService {
         if (usersRepository.findByEmailIgnoreCaseOrMobileNumber(request.email(), request.mobileNumber()).isPresent()) {
             throw new ServiceException("This email / mobileNumber exists");
         }
-
         UserDto dto = userMapper.toDto(request);
         UserEntity userEntity = userMapper.toEntity(dto);
+        userEntity.setIsEnabled(Boolean.TRUE);
         UserEntity userSaved = usersRepository.save(userEntity);
         return userMapper.toDto(userSaved);
     }

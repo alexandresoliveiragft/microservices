@@ -31,6 +31,7 @@ public class AccountService {
         AccountDto dto = accountMapper.toDto(request);
         AccountEntity entity = accountMapper.toEntity(dto);
         entity.setUser(foundUserEntity);
+        entity.setIsEnabled(Boolean.TRUE);
         AccountEntity savedEntity = accountsRepository.save(entity);
         return accountMapper.toDto(savedEntity);
     }
@@ -49,8 +50,6 @@ public class AccountService {
         AccountEntity account = accountsRepository
                 .findById(id)
                 .orElseThrow(() -> new ServiceException("Account not found"));
-
-        account.setIsEnabled(false);
-        accountsRepository.save(account);
+        accountsRepository.delete(account);
     }
 }
