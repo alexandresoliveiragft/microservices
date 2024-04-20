@@ -2,18 +2,10 @@ server:
   port: 8060
 
 spring:
-  main:
-    banner-mode: off
   application:
     name: gateway-api
   profiles:
     active: dev
-
-  servlet:
-    multipart:
-      enabled: false
-  jackson:
-    default-property-inclusion: NON_NULL
 
 eureka:
   instance:
@@ -23,12 +15,3 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: http://localhost:8070/eureka/
-
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: debug
-        orm:
-          jdbc:
-            bind: trace
