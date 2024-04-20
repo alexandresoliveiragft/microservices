@@ -47,7 +47,7 @@ spring:
 
 api:
   clients:
-    account-api: http://localhost:8080
+    account-api: http://localhost:8060/accounts-api/
   cache:
     ttl:
       cards-api-card: 10
