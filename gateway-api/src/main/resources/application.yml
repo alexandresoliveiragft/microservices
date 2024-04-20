@@ -11,17 +11,17 @@ spring:
     config:
       label: main
     gateway:
-      mvc:
-        enabled: true
       discovery:
         locator:
           enabled: true
+          lowerCaseServiceId: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include:
+          - "*"
   endpoint:
     gateway:
       enabled: true
