@@ -5,6 +5,7 @@ import dev.alexandreoliveira.microservices.employeesapi.controllers.request.empl
 import dev.alexandreoliveira.microservices.employeesapi.databases.entities.AddressEntity;
 import dev.alexandreoliveira.microservices.employeesapi.databases.entities.EmployeeEntity;
 import dev.alexandreoliveira.microservices.employeesapi.databases.repositories.EmployeeRepository;
+import dev.alexandreoliveira.microservices.employeesapi.dtos.AddressDto;
 import dev.alexandreoliveira.microservices.employeesapi.dtos.EmployeeDto;
 import dev.alexandreoliveira.microservices.employeesapi.helpers.ValidationHelper;
 import dev.alexandreoliveira.microservices.employeesapi.mappers.EmployeeMapper;
@@ -44,15 +45,14 @@ public class EmployeesService {
 
         EmployeeEntity employee = employeeMapper.toEntity(request);
 
-        employee.setIsEnabled(Boolean.TRUE);
-        AddressEntity address = employee.getAddress();
-        employee.setAddress(null);
-
         EmployeeEntity savedEmployee = employeeRepository.save(employee);
 
-        addressesService.create(savedEmployee.getId(), request.address());
+        EmployeeDto employeeDto = employeeMapper.toDto(savedEmployee);
 
-        return employeeMapper.toDto(savedEmployee);
+        AddressDto addressDto = addressesService.create(savedEmployee.getId(), savedEmployee.getVersion(), request.address());
+        employeeDto.setAddress(addressDto);
+
+        return employeeDto;
     }
 
     public EmployeeDto show(UUID id) {

@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,4 +51,13 @@ public class EmployeeEntity extends BaseEntity implements Serializable {
 
     @OneToOne(mappedBy = "employee", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private AddressEntity address;
+
+    @PrePersist
+    public void prePersist() {
+        if (Objects.isNull(this.isEnabled)) {
+            this.isEnabled = Boolean.TRUE;
+        }
+
+        this.address = null;
+    }
 }

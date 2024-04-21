@@ -8,6 +8,7 @@ import dev.alexandreoliveira.microservices.employeesapi.mappers.AddressMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -17,8 +18,9 @@ public class AddressesService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
 
-    public AddressDto create(UUID employeeId, EmployeesControllerCreateRequest.EmployeesControllerEmployeeAddressRequest addressRequest) {
-        AddressEntity savedAddress = addressRepository.save(addressMapper.toEntity(employeeId, addressRequest));
+    public AddressDto create(UUID employeeId, LocalDateTime employeeVersion, EmployeesControllerCreateRequest.EmployeesControllerEmployeeAddressRequest addressRequest) {
+        AddressEntity entity = addressMapper.toEntity(employeeId, employeeVersion, addressRequest);
+        AddressEntity savedAddress = addressRepository.save(entity);
         return addressMapper.toDto(savedAddress);
     }
 }
