@@ -6,10 +6,10 @@ import dev.alexandreoliveira.microservices.accountsapi.controllers.data.users.Us
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEntity;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.ValidationHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
-import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;

@@ -1,7 +1,7 @@
 package dev.alexandreoliveira.microservices.employeesapi.configurations;
 
-import dev.alexandreoliveira.microservices.employeesapi.properties.ClientsProperties;
 import dev.alexandreoliveira.microservices.employeesapi.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.employeesapi.properties.ClientsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

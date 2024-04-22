@@ -1,7 +1,5 @@
 package dev.alexandreoliveira.microservices.employeesapi.databases.entities.enums;
 
-import lombok.Getter;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

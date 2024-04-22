@@ -6,8 +6,8 @@ import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEnt
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.AccountsRepository;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
-import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.mappers.AccountMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -2,14 +2,13 @@ package dev.alexandreoliveira.microservices.employeesapi.services;
 
 import dev.alexandreoliveira.microservices.employeesapi.controllers.request.employees.EmployeesControllerCreateRequest;
 import dev.alexandreoliveira.microservices.employeesapi.controllers.request.employees.EmployeesControllerIndexRequest;
-import dev.alexandreoliveira.microservices.employeesapi.databases.entities.AddressEntity;
 import dev.alexandreoliveira.microservices.employeesapi.databases.entities.EmployeeEntity;
 import dev.alexandreoliveira.microservices.employeesapi.databases.repositories.EmployeeRepository;
 import dev.alexandreoliveira.microservices.employeesapi.dtos.AddressDto;
 import dev.alexandreoliveira.microservices.employeesapi.dtos.EmployeeDto;
+import dev.alexandreoliveira.microservices.employeesapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.employeesapi.helpers.ValidationHelper;
 import dev.alexandreoliveira.microservices.employeesapi.mappers.EmployeeMapper;
-import dev.alexandreoliveira.microservices.employeesapi.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;

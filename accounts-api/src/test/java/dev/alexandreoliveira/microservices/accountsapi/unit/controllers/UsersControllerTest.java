@@ -8,8 +8,8 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Use
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDtoRepresentationModelAssembler;
-import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
 import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;

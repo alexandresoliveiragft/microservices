@@ -6,10 +6,10 @@ import dev.alexandreoliveira.microservices.accountsapi.database.entities.UserEnt
 import dev.alexandreoliveira.microservices.accountsapi.database.entities.enums.AccountTypeEnum;
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
+import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.helpers.StringHelper;
 import dev.alexandreoliveira.microservices.accountsapi.mappers.UserMapper;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
-import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,6 +40,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("employees")
 @RequiredArgsConstructor
+@Slf4j
 public class EmployeesController {
 
     private final EmployeesService employeesService;
@@ -89,6 +91,7 @@ public class EmployeesController {
                     @SortDefault(sort = "name", direction = Sort.Direction.ASC)
             }) Pageable pageable
     ) {
+        log.info("check retries");
         Page<EmployeeDto> pageUsers = employeesService.index(request, pageable);
         Page<EntityModel<EmployeeDto>> userModels = pageUsers.map(employeeAssembler::toModel);
         return ResponseEntity.ok(userModels);

@@ -1,8 +1,8 @@
 package dev.alexandreoliveira.microservices.cardsapi.configurations;
 
 import dev.alexandreoliveira.microservices.cardsapi.apis.AccountApi;
-import dev.alexandreoliveira.microservices.cardsapi.properties.ClientsProperties;
 import dev.alexandreoliveira.microservices.cardsapi.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.cardsapi.properties.ClientsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

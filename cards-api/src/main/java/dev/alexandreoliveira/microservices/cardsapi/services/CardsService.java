@@ -6,9 +6,9 @@ import dev.alexandreoliveira.microservices.cardsapi.controllers.requests.CardsCo
 import dev.alexandreoliveira.microservices.cardsapi.database.entities.CardEntity;
 import dev.alexandreoliveira.microservices.cardsapi.database.repositories.CardsRepository;
 import dev.alexandreoliveira.microservices.cardsapi.dtos.CardDto;
+import dev.alexandreoliveira.microservices.cardsapi.exceptions.ServiceException;
 import dev.alexandreoliveira.microservices.cardsapi.helpers.CreditCardNumbersHelper;
 import dev.alexandreoliveira.microservices.cardsapi.mappers.CardMapper;
-import dev.alexandreoliveira.microservices.cardsapi.exceptions.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;

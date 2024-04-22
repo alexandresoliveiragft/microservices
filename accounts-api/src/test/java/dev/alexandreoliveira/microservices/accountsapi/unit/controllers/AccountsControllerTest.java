@@ -7,8 +7,8 @@ import dev.alexandreoliveira.microservices.accountsapi.database.repositories.Acc
 import dev.alexandreoliveira.microservices.accountsapi.database.repositories.UsersRepository;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
-import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
 import dev.alexandreoliveira.microservices.accountsapi.exceptions.ServiceException;
+import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
 import dev.alexandreoliveira.microservices.accountsapi.unit.UnitTest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
