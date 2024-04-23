@@ -6,6 +6,7 @@ import dev.alexandreoliveira.microservices.employeesapi.dtos.EmployeeDto;
 import dev.alexandreoliveira.microservices.employeesapi.dtos.EmployeeDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.employeesapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.employeesapi.services.EmployeesService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -74,15 +75,19 @@ public class EmployeesController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @Retry(name = "show", fallbackMethod = "showFallback")
+    @RateLimiter(name= "show", fallbackMethod = "showFallback")
     public ResponseEntity<ResponseDto<EntityModel<EmployeeDto>>> show(@PathVariable("id") UUID id) {
         EmployeeDto dto = employeesService.show(id);
         return ResponseEntity.ok(new ResponseDto<>(employeeAssembler.toModel(dto)));
     }
 
-    public ResponseEntity<String> showFallback(Throwable throwable) {
+    public ResponseEntity<ResponseDto<EntityModel<EmployeeDto>>> showFallback(Throwable throwable) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
-                .body(throwable.getMessage());
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "EmployeesController.showFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(new ResponseDto<>(null));
     }
 
     @Operation(summary = "Show all employees by params.")
@@ -93,6 +98,7 @@ public class EmployeesController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @Retry(name = "index", fallbackMethod = "indexFallback")
+    @RateLimiter(name= "show", fallbackMethod = "indexFallback")
     public ResponseEntity<Page<EntityModel<EmployeeDto>>> index(
             EmployeesControllerIndexRequest request,
             @PageableDefault(size = 5)
@@ -105,9 +111,12 @@ public class EmployeesController {
         return ResponseEntity.ok(userModels);
     }
 
-    public ResponseEntity<String> indexFallback(Throwable throwable) {
+    public ResponseEntity<Page<EntityModel<EmployeeDto>>> indexFallback(Throwable throwable) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
-                .body(throwable.getMessage());
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "EmployeesController.indexFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(Page.empty());
     }
 }

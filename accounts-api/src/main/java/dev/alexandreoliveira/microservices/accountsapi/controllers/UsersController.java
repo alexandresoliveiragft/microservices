@@ -9,6 +9,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -83,15 +85,19 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @Retry(name = "show", fallbackMethod = "showFallback")
+    @RateLimiter(name= "index", fallbackMethod = "showFallback")
     public ResponseEntity<ResponseDto<EntityModel<UserDto>>> show(@PathVariable("id") UUID id) {
         UserDto dto = userService.show(id);
         return ResponseEntity.ok(new ResponseDto<>(assembler.toModel(dto)));
     }
 
-    public ResponseEntity<String> showFallback(Throwable throwable) {
+    public ResponseEntity<ResponseDto<EntityModel<UserDto>>> showFallback(Throwable throwable) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
-                .body(throwable.getMessage());
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "UsersController.showFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(new ResponseDto<>(null));
     }
 
     @Operation(summary = "Show all users by params.")
@@ -102,6 +108,7 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @Retry(name = "index", fallbackMethod = "indexFallback")
+    @RateLimiter(name= "index", fallbackMethod = "indexFallback")
     public ResponseEntity<Page<EntityModel<UserDto>>> index(
             UserControllerIndexRequest request,
             @RequestParam(value = "isComplete", required = false, defaultValue = "false") Boolean isComplete,
@@ -130,10 +137,13 @@ public class UsersController {
         return ResponseEntity.ok(userModels);
     }
 
-    public ResponseEntity<String> indexFallback(Throwable throwable) {
+    public ResponseEntity<Page<EntityModel<UserDto>>> indexFallback(Throwable throwable) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
-                .body(throwable.getMessage());
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "UsersController.indexFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(Page.empty());
     }
 
     @Operation(summary = "Update user by identifier.")
@@ -157,9 +167,23 @@ public class UsersController {
     )
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "{id}/verify")
-    public ResponseEntity<Void> verify(@PathVariable("id") UUID id) {
+    @Retry(name = "verify", fallbackMethod = "verifyFallback")
+    @RateLimiter(name= "verify", fallbackMethod = "verifyFallback")
+    public ResponseEntity<ResponseDto<Map<String, Boolean>>> verify(@PathVariable("id") UUID id) {
         userService.verify(id);
-        return ResponseEntity.ok().build();
+        Map<String, Boolean> data = Map.of("isValid", Boolean.TRUE);
+        return ResponseEntity
+                .ok(new ResponseDto<>(data));
+    }
+
+    public ResponseEntity<ResponseDto<Map<String, Boolean>>> verifyFallback(Throwable throwable) {
+        Map<String, Boolean> data = Map.of("isValid", Boolean.FALSE);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "UsersController.verifyFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(new ResponseDto<>(data));
     }
 
     @Operation(summary = "Delete user by identifier.")

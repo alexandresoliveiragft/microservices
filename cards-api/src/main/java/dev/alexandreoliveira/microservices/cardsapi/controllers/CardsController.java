@@ -6,6 +6,7 @@ import dev.alexandreoliveira.microservices.cardsapi.dtos.CardDto;
 import dev.alexandreoliveira.microservices.cardsapi.dtos.CardDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.cardsapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.cardsapi.services.CardsService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -68,15 +69,19 @@ public class CardsController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @Retry(name = "show", fallbackMethod = "showFallback")
+    @RateLimiter(name= "show", fallbackMethod = "showFallback")
     public ResponseEntity<ResponseDto<EntityModel<CardDto>>> show(@PathVariable("id") UUID id) {
         CardDto dto = cardsService.show(id);
         return ResponseEntity.ok(new ResponseDto<>(assembler.toModel(dto)));
     }
 
-    public ResponseEntity<String> showFallback(Throwable throwable) {
+    public ResponseEntity<ResponseDto<EntityModel<CardDto>>> showFallback(Throwable throwable) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
-                .body(throwable.getMessage());
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "UsersController.showFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(new ResponseDto<>(null));
     }
 
     @Operation(summary = "Update due day by card number and user.")

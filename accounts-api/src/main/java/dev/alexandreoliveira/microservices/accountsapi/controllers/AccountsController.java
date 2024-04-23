@@ -5,6 +5,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -67,17 +68,22 @@ public class AccountsController {
     )
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @Retry(name = "show", fallbackMethod = "showFallback")
-    public ResponseEntity<EntityModel<AccountDto>> show(
+    @RateLimiter(name= "show", fallbackMethod = "showFallback")
+    public ResponseEntity<ResponseDto<EntityModel<AccountDto>>> show(
             @PathVariable("id")UUID id
     ) {
         AccountDto account = accountService.show(id);
-        return ResponseEntity.ok(assembler.toModel(account));
+        EntityModel<AccountDto> model = assembler.toModel(account);
+        return ResponseEntity.ok(new ResponseDto<>(model));
     }
 
-    public ResponseEntity<String> showFallback(Throwable throwable) {
+    public ResponseEntity<ResponseDto<EntityModel<AccountDto>>> showFallback(Throwable throwable) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
-                .body(throwable.getMessage());
+                .status(HttpStatus.OK)
+                .header("X-Fallback-Method", "AccountsController.showFallback")
+                .header("X-Fallback-Exception", throwable.getClass().getName())
+                .header("X-Fallback-Exception-Message", throwable.getMessage())
+                .body(new ResponseDto<>(null));
     }
 
     @Operation(summary = "Delete account by id")
