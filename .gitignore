@@ -239,4 +239,6 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,macos,maven,visualstudiocode,windows
 /devops/volumes/**/data/
+/devops/volumes/grafana/minio/**
+/devops/volumes/grafana/minio/.minio.sys/
 /.idea/
