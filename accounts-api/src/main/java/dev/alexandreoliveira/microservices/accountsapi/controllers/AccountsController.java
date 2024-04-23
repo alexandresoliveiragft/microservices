@@ -5,6 +5,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.AccountDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.accountsapi.services.AccountService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,11 +66,18 @@ public class AccountsController {
             description = "Details for account"
     )
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Retry(name = "show", fallbackMethod = "showFallback")
     public ResponseEntity<EntityModel<AccountDto>> show(
             @PathVariable("id")UUID id
     ) {
         AccountDto account = accountService.show(id);
         return ResponseEntity.ok(assembler.toModel(account));
+    }
+
+    public ResponseEntity<String> showFallback(Throwable throwable) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(throwable.getMessage());
     }
 
     @Operation(summary = "Delete account by id")

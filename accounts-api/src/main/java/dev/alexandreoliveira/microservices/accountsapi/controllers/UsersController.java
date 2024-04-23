@@ -9,6 +9,7 @@ import dev.alexandreoliveira.microservices.accountsapi.dtos.ResponseDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDto;
 import dev.alexandreoliveira.microservices.accountsapi.dtos.UserDtoRepresentationModelAssembler;
 import dev.alexandreoliveira.microservices.accountsapi.services.UserService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -81,9 +82,16 @@ public class UsersController {
     )
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Retry(name = "show", fallbackMethod = "showFallback")
     public ResponseEntity<ResponseDto<EntityModel<UserDto>>> show(@PathVariable("id") UUID id) {
         UserDto dto = userService.show(id);
         return ResponseEntity.ok(new ResponseDto<>(assembler.toModel(dto)));
+    }
+
+    public ResponseEntity<String> showFallback(Throwable throwable) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(throwable.getMessage());
     }
 
     @Operation(summary = "Show all users by params.")
@@ -93,6 +101,7 @@ public class UsersController {
     )
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Retry(name = "index", fallbackMethod = "indexFallback")
     public ResponseEntity<Page<EntityModel<UserDto>>> index(
             UserControllerIndexRequest request,
             @RequestParam(value = "isComplete", required = false, defaultValue = "false") Boolean isComplete,
@@ -119,6 +128,12 @@ public class UsersController {
         }
 
         return ResponseEntity.ok(userModels);
+    }
+
+    public ResponseEntity<String> indexFallback(Throwable throwable) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(throwable.getMessage());
     }
 
     @Operation(summary = "Update user by identifier.")
