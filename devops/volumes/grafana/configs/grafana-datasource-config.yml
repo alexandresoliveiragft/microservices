@@ -9,7 +9,7 @@ datasources:
   - name: Prometheus
     type: prometheus
     uid: prometheus
-    url: http://prometheus:9090
+    url: http://grafana-prometheus:9090
     access: proxy
     orgId: 1
     basicAuth: false
@@ -21,7 +21,7 @@ datasources:
   - name: Tempo
     type: tempo
     uid: tempo
-    url: http://tempo:3100
+    url: http://grafana-tempo:3100
     access: proxy
     orgId: 1
     basicAuth: false
@@ -38,7 +38,7 @@ datasources:
     access: proxy
     orgId: 1
     editable: true
-    url: http://gateway:3100
+    url: http://grafana-gateway:3100
     jsonData:
       httpHeaderName1: "X-Scope-OrgID"
       derivedFields:

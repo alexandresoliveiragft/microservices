@@ -6,24 +6,24 @@ scrape_configs:
   - job_name: 'accounts-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'accounts:8081' ]
+      - targets: [ 'localhost:8081' ]
   - job_name: 'cards-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'cards:8082' ]
+      - targets: [ 'localhost:8082' ]
   - job_name: 'employees-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'employees:8083' ]
+      - targets: [ 'localhost:8083' ]
   - job_name: 'gateway-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'gateway-api:8060' ]
+      - targets: [ 'localhost:8060' ]
   - job_name: 'discovery-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'discovery-api:8070' ]
+      - targets: [ 'localhost:8070' ]
   - job_name: 'config-api'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'config-api:8080' ]
+      - targets: [ 'localhost:8080' ]

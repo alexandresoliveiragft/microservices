@@ -37,3 +37,11 @@ info:
     name: "Bank - Gateway API"
     description: "Gateway microservice for bank dashboard"
     version: "0.0.1-SNAPSHOT"
+
+logging:
+  path: "${project.basedir}/../devops/volumes/java-logs"
+  file: "${spring.application.name}.log"
+  max-size: 10MB
+  max-history: 1
+  pattern:
+    dateformat: "yyyyMMddHHmmss"
