@@ -98,6 +98,7 @@ services:
     volumes:
       - ./volumes/grafana/configs/promtail-docker-config.yml:/etc/promtail/config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/java-logs:/var/log
     command: -config.file=/etc/promtail/config.yaml
     networks:
       - aosoluti-microservices-network

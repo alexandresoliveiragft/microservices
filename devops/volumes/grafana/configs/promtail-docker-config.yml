@@ -25,3 +25,4 @@ scrape_configs:
         - localhost
         labels:
           job: javalogs
+          __path__: /var/log/*-api.log

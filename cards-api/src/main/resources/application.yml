@@ -41,3 +41,13 @@ info:
     name: "Bank - Cards API"
     description: "Cards microservice for bank dashboard"
     version: "0.0.1-SNAPSHOT"
+
+logging:
+  file:
+    path: "@project.basedir@/.."
+    name: "devops/volumes/java-logs/${spring.application.name}.log"
+  max-size: 10MB
+  max-history: 1
+  level:
+    dev:
+      alexandreoliveira: DEBUG
