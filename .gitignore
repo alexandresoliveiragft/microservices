@@ -238,7 +238,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,macos,maven,visualstudiocode,windows
-/devops/volumes/**/data/
-/devops/volumes/grafana/minio/**
-/devops/volumes/grafana/minio/.minio.sys/
+/devops-microservices/**/volumes/**/data/
+/devops-microservices/**/volumes/grafana/minio/.minio.sys/
+/devops-microservices/**/volumes/grafana/minio/loki-data/
+/devops-microservices/**/volumes/grafana/minio/loki-ruler/
 /.idea/
